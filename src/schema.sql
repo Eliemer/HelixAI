@@ -1,0 +1,4 @@
+/*
+This script provides the schema for the database.
+This file is exclusively SQL queries
+*/
