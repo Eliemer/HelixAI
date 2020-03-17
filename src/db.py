@@ -1,6 +1,7 @@
 '''
-This file will be in charge of all necessary CRUD operations and input validation
-required by the app. Anything related to the Database goes here.
+This file is in charge of defining the db object and config.
+Queries are in /blueprints
+This file defines init, close, and get functions
 '''
 
 import sqlite3
