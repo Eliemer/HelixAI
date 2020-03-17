@@ -5,6 +5,7 @@ This file is exclusively SQL queries
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Experiment;
 DROP TABLE IF EXISTS Team;
+DROP TABLE IF EXISTS Config;
 DROP TABLE IF EXISTS User_in_Team;
 
 CREATE TABLE User (
