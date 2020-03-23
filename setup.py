@@ -4,12 +4,13 @@ requires = [
     'flask',
     'flask-sqlalchemy',
     'psycopg2',
-    'pytorch',
+    'torch',
     'pandas',
+    'pytorch_lightning',
 ]
 
 setup(
-    name='capstone',
+    name='Capstone 2020',
     version='0.0',
     description='Capstone project 2020',
     author='Eliemer E. Velez, Luis M. Cintron, Jonathan A. Irizarry',
@@ -17,5 +18,5 @@ setup(
     keywords='web flask deep-learning pytorch',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=requires 
+    install_requires=requires
 )

@@ -1,0 +1,5 @@
+include src/schema.sql
+graft src/blueprints
+graft src/static
+graft src/templates
+global-exclude *.pyc
