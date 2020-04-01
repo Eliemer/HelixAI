@@ -13,7 +13,7 @@ setup(
     version='0.0',
     description='Capstone project 2020',
     author='Eliemer E. Velez, Luis M. Cintron, Jonathan A. Irizarry',
-    author_email='eliemer.velez@upr.edu',
+    author_email='eliemer.velez@upr.edu, luis.cintron16@upr.edu, jonathan.irizarry3@upr.edu',
     keywords='web flask deep-learning pytorch',
     packages=find_packages(),
     include_package_data=True,
