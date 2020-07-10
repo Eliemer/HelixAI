@@ -1,0 +1,3 @@
+*.pdb
+*.npy
+lightning_logs/*

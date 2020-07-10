@@ -1,6 +1,6 @@
 # For windows powershell
-%ENV:FLASK_APP = 'src'
-%ENV:FLASK_ENV = 'development'
+$env:FLASK_APP = 'src'
+$env:FLASK_ENV = 'development'
 
 # For Bash
 export FLASK_APP = 'src'

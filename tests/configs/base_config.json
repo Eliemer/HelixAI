@@ -1,0 +1,35 @@
+{
+  "dataset"       : "",
+  "epochs"        : 100,
+  "learning_rate" : 1e-5,
+  "batch"         : 25,
+  "shuffle"       : true,
+  "split"         : [0.7, 0.1, 0.2],
+  "fuzzy_radius"  : 0.1,
+  "augment"       : 5,
+
+  "is_weighted"   : true,
+  "workers"       : 25,
+
+  "input_csv"     : "",
+  "error_csv"     : "",
+  "tensors"       : "",
+  "pdb"           : "",
+  "output_name"   : "",
+
+  "nb_classes"    : 2,
+  "nb_features"   : 29,
+  "nb_nodes"      : 200,
+
+  "nb_conv_layers": 2,
+  "nb_kernels"    : 5,
+  "nb_filters"    : 64,
+  "conv_dropout"  : 0.5,
+  "pool_size"     : 4,
+  "kernel_limit"  : 125,
+
+  "nb_linear_layers" : 2,
+  "lin_size"      : 128,
+  "lin_dropout"   : 0.2
+
+}
