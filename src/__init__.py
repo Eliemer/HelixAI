@@ -10,6 +10,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'capstone.sqlite'),
+        CONFIG_PATH=os.path.join(app.instance_path, 'configuration_files/')
     )
 
     if test_config is None:
@@ -34,11 +35,11 @@ def create_app(test_config=None):
     def index():
         return 'This is the index'
 
-    @app.route('/base_config')
-    def base_config():
-        import json
-        data = json.load(open('tests/configs/base_config.json', 'r'))
-        return jsonify(data)
+    # @app.route('/base_config')
+    # def base_config():
+    #     import json
+    #     data = json.load(open('tests/configs/base_config.json', 'r'))
+    #     return jsonify(data)
 
     from . import db
     db.init_app(app)

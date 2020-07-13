@@ -18,4 +18,15 @@ def login_required(view):
 @bp.route('/index')
 @login_required
 def index():
-    return render_template('dashboard/index.html')
+    return 
+
+@bp.route('/datasets', methods=('GET',))
+def all_datasets():
+
+	db = get_db()
+
+	datasets = db.execute(
+		'SELECT * FROM Dataset'
+	).fetchall()
+
+	return datasets
