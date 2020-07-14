@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, current_app, session, url_for, request
 # from src.blueprints.auth import login_required
 from src.db import get_db
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 import json
 import functools
 import os
@@ -38,37 +38,37 @@ CONFIG_PATH = './pytorch_lightning_src/Configs'
 
 
 
-@bp.route('/all')
+@bp.route('/all', methods=('GET',))
 def display_all_config_files():
     '''
     '''
+    if request.method == 'GET':
+        configs = {}
+        db = get_db()
 
-    ### CORRECT ###
-    configs = {}
-    db = get_db()
-
-    db_res = db.execute("SELECT * FROM ConfigFile").fetchall()
+        db_res = db.execute("SELECT * FROM ConfigFile").fetchall()
 
 
-    for i, res in enumerate(db_res):
-        configs[i] = tuple(res)
+        for i, res in enumerate(db_res):
+            configs[i] = tuple(res)
 
-    return configs
+        return configs
 
-@bp.route('/user/<user_id>')
+@bp.route('/user/<user_id>', methods=('GET',))
 def display_user_config_files(user_id):
-    configs = {}
+    if request.method == 'GET':
+        configs = {}
 
-    ### make sql query for all config files associated with user_id ###
-    db = get_db()
-    db_res = db.execute(
-        'SELECT Trains.config_id, config_path FROM Trains INNER JOIN ConfigFile ON ConfigFile.config_id = Trains.config_id WHERE user_id = ?', (user_id,)
-    )
+        ### make sql query for all config files associated with user_id ###
+        db = get_db()
+        db_res = db.execute(
+            'SELECT Trains.config_id, config_path FROM Trains INNER JOIN ConfigFile ON ConfigFile.config_id = Trains.config_id WHERE user_id = ?', (user_id,)
+        )
 
-    for res in db_res:
-        configs[len(configs)] = tuple(res)
+        for res in db_res:
+            configs[len(configs)] = tuple(res)
 
-    return configs
+        return configs
 
 @bp.route('/by_config_id/<config_id>')
 def search_by_config_id(config_id):

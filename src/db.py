@@ -49,7 +49,6 @@ def init_db():
 
     # Login Table
     data = [(i, random_string(10), random_string(10)) for i in range(25)]
-    print(len(data))
     db.executemany('INSERT INTO Login VALUES (?,?,?)', data)
 
     # Users Table
@@ -60,8 +59,11 @@ def init_db():
     data = [(i, random_string(10)+'.json') for i in range(25)]
     db.executemany('INSERT INTO ConfigFile VALUES (?,?)', data)
 
-    
     # Dataset
+    data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
+    data.append([len(data), 'my_dataset', 0, 0, current_app.config['CSV_PATH']+'test_input.csv', current_app.config['CSV_PATH']+'test_error.csv'])
+    db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?)', data)
+
     # Model
     # Pdbs
     # Attributions

@@ -1,4 +1,4 @@
-import os
+import os, sys
 from flask_cors import CORS, cross_origin
 from flask import Flask, jsonify
 
@@ -10,7 +10,10 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'capstone.sqlite'),
-        CONFIG_PATH=os.path.join(app.instance_path, 'configuration_files/')
+        CONFIG_PATH=os.path.join(app.instance_path, 'configuration_files/'),
+        PDB_PATH=os.path.join(app.instance_path, 'PDB/'),
+        TENSOR_PATH=os.path.join(app.instance_path, 'Tensors/'),
+        CSV_PATH=os.path.join(app.instance_path, 'CSV/')
     )
 
     if test_config is None:
@@ -24,8 +27,24 @@ def create_app(test_config=None):
     try:
         os.makedirs(app.instance_path)
     except OSError:
-        pass
+        print("Error: ", sys.exc_info()[0])
 
+    try:
+        os.makedirs(app.config['PDB_PATH'])
+    except OSError:
+        print("Error: ", sys.exc_info()[0])
+
+    try:
+        os.makedirs(app.config['TENSOR_PATH'])
+    except OSError:
+        print("Error: ", sys.exc_info()[0])
+
+    try:
+        os.makedirs(app.config['CSV_PATH'])
+    except OSError:
+        print("Error: ", sys.exc_info()[0])
+
+        
     # a simple page that says hello
     @app.route('/hello')
     def hello():

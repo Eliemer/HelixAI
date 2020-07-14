@@ -38,13 +38,12 @@ CREATE TABLE ConfigFile(
   config_path TEXT UNIQUE );
 
 CREATE TABLE Dataset (
-  dataset_name TEXT PRIMARY KEY,
-  numb_pdbs_class1 INTEGER,
-  numb_pdbs_class2 INTEGER,
+  dataset_id INTEGER PRIMARY KEY,
+  dataset_name TEXT,
+  num_pdbs_class1 INTEGER,
+  num_pdbs_class2 INTEGER,
   input_csv TEXT,
-  error_csv TEXT,
-  tensors TEXT,
-  pdb_location TEXT);
+  error_csv TEXT);
 
 CREATE TABLE Model(
   model_id INTEGER PRIMARY KEY,
