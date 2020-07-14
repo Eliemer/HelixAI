@@ -7,7 +7,7 @@
           <md-tab id="tab-home" md-label="PDBS" md-icon="bug_report">
             <structure></structure>
           </md-tab>
-          <md-tab id="tab-pages" md-label="3D View" md-icon="code"> 
+          <md-tab id="tab-pages" md-label="3D View" md-icon="code">
             <viewer></viewer>
           </md-tab>
 
@@ -24,7 +24,7 @@
 
 <script>
 import Structure from "./Structure.vue";
-import Viewer from "./Viewer.vue"
+import Viewer from "./Viewer.vue";
 export default {
   name: "interpret-nav-tab",
   components: {

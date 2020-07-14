@@ -10,8 +10,8 @@
         <div class="md-layout">
           <div class="md-layout-item md-large-size-100 md-size-100">
             <md-field>
-              <label for="name">Name</label>
-              <md-input v-model="name" type="text"> </md-input>
+              <label for="name">File Name</label>
+              <md-input v-model="config_name" type="text"> </md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-50 md-size-50">
@@ -33,19 +33,20 @@
           <div class="md-layout-item md-large-size-33 md-size-33">
             <md-field>
               <label>Learning Rate</label>
-              <md-input v-model="learning_rate" type="number"></md-input>
+              <md-input v-model="learning_rate" type="number" placeholder="0.000001" step="0.00000000001" min="0.000000000001" max="1"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-33 md-size-33">
             <md-field>
               <label>Linear Dropout Rate</label>
-              <md-input v-model="lin_dropout" type="number"></md-input>
+              <md-input v-model="lin_dropout" type="number" step="0.01" min="0.00" max="1"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-33 md-size-33">
             <md-field>
               <label>Convolutional Dropout</label>
-              <md-input v-model="conv_dropout" type="number"></md-input>
+              <md-input v-model="conv_dropout" type="number" step="0.01" min="0.00" max="1"></md-input>
+              <md-tooltip>Convolutional Dropout rate</md-tooltip>
             </md-field>
           </div>
           <div class="md-layout-item md-small-size-100 md-size-50">
@@ -132,7 +133,7 @@
           </div>
           <div class="md-layout-item md-size-100 text-right">
             <md-card-actions>
-              <md-button type="submit" class="md-raised md-success">
+              <md-button type="submit" class="md-raised md-primary">
                 Create Config File</md-button
               >
             </md-card-actions>
@@ -154,7 +155,7 @@ export default {
   },
   data() {
     return {
-      name: null,
+      config_name: null,
       dataset: null,
       epoch: null,
       batch: null,

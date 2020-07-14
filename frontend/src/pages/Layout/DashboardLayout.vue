@@ -49,8 +49,8 @@ export default {
   },
   data() {
     return {
-      sidebarBackground: "green",
-      sidebarBackgroundImage: require("@/assets/img/sidebar-1.png")
+      sidebarBackground: "blue",
+      sidebarBackgroundImage: require("@/assets/img/download.png")
     };
   }
 };

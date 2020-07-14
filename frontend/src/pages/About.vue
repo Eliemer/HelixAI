@@ -40,17 +40,13 @@
       <div class="md-layout-item md-large-size-33 md-size-33">
         <md-card class="md-card-profile" style="padding-top:30%">
           <div class="md-card-avatar">
-            <img class="img" src="@/assets/img/faces/marc.jpg" />
+            <img class="img" src="@/assets/img/faces/user.png" />
           </div>
 
           <md-card-content>
-            <h6 class="category text-gray">CEO / Co-Founder</h6>
-            <h4 class="card-title">Alec Thompson</h4>
-            <p class="card-description">
-              Don't be scared of the truth because we need to restart the human
-              foundation in truth And I love you like Kanye loves Kanye I love
-              Rick Owens’ bed design but the back is...
-            </p>
+            <h6 class="category text-gray">Developer / RUM</h6>
+            <h4 class="card-title">Eleiemer Velez</h4>
+            <p class="card-description"></p>
             <md-button class="md-round md-success">Follow</md-button>
           </md-card-content>
         </md-card>
@@ -58,17 +54,27 @@
       <div class="md-layout-item md-large-size-33 md-size-33">
         <md-card class="md-card-profile" style="padding-top:30%">
           <div class="md-card-avatar">
-            <img class="img" src="@/assets/img/faces/marc.jpg" />
+            <img class="img" src="@/assets/img/faces/user.png" />
           </div>
 
           <md-card-content>
-            <h6 class="category text-gray">CEO / Co-Founder</h6>
-            <h4 class="card-title">Alec Thompson</h4>
-            <p class="card-description">
-              Don't be scared of the truth because we need to restart the human
-              foundation in truth And I love you like Kanye loves Kanye I love
-              Rick Owens’ bed design but the back is...
-            </p>
+            <h6 class="category text-gray">Developer/ RUM</h6>
+            <h4 class="card-title">Luis M. Cintron</h4>
+            <p class="card-description"></p>
+            <md-button class="md-round md-success">Follow</md-button>
+          </md-card-content>
+        </md-card>
+      </div>
+      <div class="md-layout-item md-large-size-33 md-size-33">
+        <md-card class="md-card-profile" style="padding-top:30%">
+          <div class="md-card-avatar">
+            <img class="img" src="@/assets/img/faces/user.png" />
+          </div>
+
+          <md-card-content>
+            <h6 class="category text-gray">Mentor/ RUM</h6>
+            <h4 class="card-title">Wilson Rivera Gallego</h4>
+            <p class="card-description"></p>
             <md-button class="md-round md-success">Follow</md-button>
           </md-card-content>
         </md-card>

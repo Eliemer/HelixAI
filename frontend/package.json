@@ -11,6 +11,7 @@
   "dependencies": {
     "@algoz098/vue-player": "^0.4.3",
     "chartist": "0.11.4",
+    "chartist-plugin-legend": "^0.6.2",
     "core-js": "^3.6.4",
     "google-maps": "4.2.3",
     "vue": "2.6.11",
