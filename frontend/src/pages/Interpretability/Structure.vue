@@ -52,7 +52,7 @@ export default {
           dataset: "K",
           loss: 0.00001,
           pdb_path: "/pdb/Ras/1atp.pdb"
-        },
+        }
       ]
     };
   },

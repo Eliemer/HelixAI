@@ -11,13 +11,7 @@
           data-background-color="blue"
         >
           <template slot="content">
-            <h4 class="title">Best Performing Configurations</h4>
-            <p class="category">
-              <span class="text-success"
-                ><i class="fas fa-long-arrow-alt-up"></i> 55%
-              </span>
-              increase in today sales.
-            </p>
+            <h4 class="title">Accuracy of Best Performing Models</h4>
           </template>
 
           <template slot="footer">
@@ -35,19 +29,18 @@
           :chart-data="dataCompletedTasksChart.data"
           :chart-options="dataCompletedTasksChart.options"
           :chart-type="'Line'"
-          data-background-color="green"
+          data-background-color="teal"
         >
           <template slot="content">
-            <h4 class="title">Completed Tasks</h4>
+            <h4 class="title">Loss of Best Performing Models</h4>
             <p class="category">
-              Last Campaign Performance
+              Loss per epoch of top models for each dataset
             </p>
           </template>
 
           <template slot="footer">
             <div class="stats">
               <md-icon>access_time</md-icon>
-              campaign sent 26 minutes ago
             </div>
           </template>
         </chart-card>
@@ -77,7 +70,7 @@
         <div
           class="md-layout-item md-large-size-100 md-xsmall-size-100 md-size-100"
         >
-          <stats-card data-background-color="green">
+          <stats-card data-background-color="blue">
             <template slot="header">
               <img src="@/assets/img/white_logo.png" style="max-width: 70px; max-height: 70px; margin-right: -5px;"/>
             </template>
@@ -102,7 +95,7 @@
         <nav-tabs-card>
           <template slot="content">
             <span class="md-nav-tabs-title">Tasks:</span>
-            <md-tabs class="md-success" md-alignment="left">
+            <md-tabs class="md-accent" md-alignment="left">
               <md-tab id="tab-home" md-label="Bugs" md-icon="bug_report">
                 <nav-tabs-table></nav-tabs-table>
               </md-tab>
@@ -122,12 +115,12 @@
         class="md-layout-item md-large-size-100 md-xsmall-size-100 md-size-100"
       >
         <md-card>
-          <md-card-header data-background-color="orange">
-            <h4 class="title">Employees Stats</h4>
-            <p class="category">New employees on 15th September, 2016</p>
+          <md-card-header data-background-color="blue">
+            <h4 class="title">Available Datasets</h4>
+            <p class="category">Datasets available for training</p>
           </md-card-header>
           <md-card-content>
-            <ordered-table table-header-color="orange"></ordered-table>
+            <ordered-table table-header-color="blue"></ordered-table>
           </md-card-content>
         </md-card>
       </div>
@@ -156,8 +149,12 @@ export default {
     return {
       dailySalesChart: {
         data: {
-          labels: ["M", "T", "W", "T", "F", "S", "S"],
-          series: [[12, 17, 7, 17, 23, 18, 38]]
+          labels: Array.from(Array(7), (_, i) => i + 1),
+          series: [
+            [12, 17, 7, 17, 23, 18, 38],
+            [25, 20, 10, 21, 30, 22, 41],
+            [9, 10, 22, 16, 23, 34, 55]
+          ]
         },
         options: {
           lineSmooth: this.$Chartist.Interpolation.cardinal({
@@ -184,7 +181,9 @@ export default {
             tension: 0
           }),
           low: 0,
-          high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+          high: 1500, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+          fullWidth: true,
+
           chartPadding: {
             top: 0,
             right: 0,
