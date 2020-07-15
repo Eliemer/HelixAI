@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, current_app, session, url_for, request
-# from src.blueprints.auth import login_required
+from flask import jsonify
 from src.db import get_db
 from werkzeug.utils import secure_filename
 import json
@@ -43,21 +43,21 @@ def display_all_config_files():
     '''
     '''
     if request.method == 'GET':
-        configs = {}
+        configs = []
         db = get_db()
 
         db_res = db.execute("SELECT * FROM ConfigFile").fetchall()
 
 
-        for i, res in enumerate(db_res):
-            configs[i] = tuple(res)
+        for res in db_res:
+            configs.append(dict(res))
 
-        return configs
+        return jsonify(configs)
 
 @bp.route('/user/<user_id>', methods=('GET',))
 def display_user_config_files(user_id):
     if request.method == 'GET':
-        configs = {}
+        configs = []
 
         ### make sql query for all config files associated with user_id ###
         db = get_db()
@@ -66,9 +66,9 @@ def display_user_config_files(user_id):
         )
 
         for res in db_res:
-            configs[len(configs)] = tuple(res)
+            configs.append(dict(res))
 
-        return configs
+        return jsonify(configs)
 
 @bp.route('/by_config_id/<config_id>')
 def search_by_config_id(config_id):
@@ -76,7 +76,7 @@ def search_by_config_id(config_id):
 
     db_res = db.execute("SELECT * FROM ConfigFile WHERE config_id=?", config_id).fetchone()
 
-    return json.dumps(db_res)
+    return jsonify(dict(db_res))
 
 @bp.route('/by_config_name/<config_path>')
 def search_by_config_path(config_path):
@@ -84,4 +84,4 @@ def search_by_config_path(config_path):
 
     db_res = db.execute("SELECT * FROM ConfigFile WHERE config_path=(?)", [config_path]).fetchone()
 
-    return json.dumps(db_res)
+    return jsonify(dict(db_res))

@@ -17,7 +17,7 @@ def get_db():
             detect_types=sqlite3.PARSE_DECLTYPES
         )
 
-        # g.db.row_factory = sqlite3.Row
+        g.db.row_factory = sqlite3.Row
 
     return g.db
 
@@ -61,7 +61,7 @@ def init_db():
 
     # Dataset
     data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
-    data.append([len(data), 'my_dataset', 0, 0, current_app.config['CSV_PATH']+'test_input.csv', current_app.config['CSV_PATH']+'test_error.csv'])
+    data.append([len(data), 'my_dataset', 0, 0, 'test_input.csv', 'test_error.csv'])
     db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?)', data)
 
     # Model

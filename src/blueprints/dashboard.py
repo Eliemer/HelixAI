@@ -1,8 +1,10 @@
-from flask import Blueprint, flash, g, redirect, render_template, session, url_for
-# from src.blueprints.auth import login_required
+from flask import Blueprint, flash, g, request, session, url_for
+from flask import current_app, jsonify
+from werkzeug.utils import secure_filename
 from src.db import get_db
 import functools
 import json
+import os
 import pandas as pd
 
 
@@ -10,57 +12,118 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
-# def allowed_file(filename):
+def allowed_file(filename):
+	if '.' in filename:
+		if filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+			return True
+	return False
 
 
 def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.login'))
+	@functools.wraps(view)
+	def wrapped_view(**kwargs):
+		if g.user is None:
+			return redirect(url_for('auth.login'))
 
-        return view(**kwargs)
-    return wrapped_view
+		return view(**kwargs)
+	return wrapped_view
 
 
 @bp.route('/index')
 @login_required
 def index():
-    return 
+	return 
 
-@bp.route('/new', methods=('GET', 'POST'))
-def new_dataset():
+@bp.route('/', methods=['GET', 'POST'])
+def upload_file():
+	if request.method == 'POST':
+		# check if the post request has the file part
+		if 'file' not in request.files:
+			flash('No file part')
+			return {"Error": "No file in form"}
+		file = request.files['file']
+		# if user does not select file, browser also
+		# submit an empty part without filename
+		if file.filename == '':
+			flash('No selected file')
+			return {"Error": "No selected file"}
+		if file and allowed_file(file.filename):
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(current_app.config['CSV_PATH'], filename))
+
+				return insert_dataset_to_db(filename, request.form['dataset_name'])
+
+		else:
+				return {"Error": "Invalid file"}
+
+	elif request.method == 'GET':
+		return "This is /dashboad::GET"
+
+
+def insert_dataset_to_db(filename, dataset_name=None):
+	db = get_db()
+
+	if dataset_name is not None:
+		exists = db.execute("SELECT dataset_id FROM Dataset WHERE input_csv=?", [filename]).fetchone()
+
+		if exists is not None:
+			flash("Dataset already exists")
+			return {"Error": "input_csv already exists", "dataset_id": exists}
+		else:
+			db.execute(
+				"INSERT INTO Dataset (dataset_name, input_csv) VALUES (?,?)",
+				[dataset_name, filename]
+			)
+
+			db.commit()
+
+			return {"dataset_id": db.execute("SELECT dataset_id FROM Dataset WHERE input_csv=?", [filename]).fetchone()}
+
 
 
 @bp.route('/datasets', methods=('GET',))
 def all_datasets():
 
-	datasets = {}
+	datasets = []
 	db = get_db()
 
 	db_res = db.execute(
 		'SELECT * FROM Dataset'
 	).fetchall()
 
-	for i, res in enumerate(db_res):
-		datasets[i] = tuple(res)
+	for res in db_res:
+		datasets.append(dict(res))
 
-	return datasets
+	return jsonify(datasets)
 
 @bp.route('/count_classes/<dataset_name>', methods=('GET',))
 def count_classes(dataset_name):
 
+	counts = {}
 	db = get_db()
 	db_res = db.execute(
 		'SELECT input_csv, error_csv FROM Dataset WHERE dataset_name=?', 
 		[dataset_name]
 	).fetchone()
+	try:
+		data_in = pd.read_csv(current_app.config['CSV_PATH'] + db_res[0])	
+		class_counts_in = data_in.groupby(['CLASS_ID']).size()
+		counts['Input'] = {f"class{i}": c for i, c in enumerate(class_counts_in)}
+		counts['Error'] = {}
 
-	data_in = pd.read_csv(db_res[0])
-	data_err = pd.read_csv(db_res[1])
+		try: 
+			data_err = pd.read_csv(current_app.config['CSV_PATH'] + db_res[1])
+			class_counts_out = data_err.groupby(['CLASS_ID']).size()		
+			counts['Error'] = {f"class{i}": c for i, c in enumerate(class_counts_out)}
 
-	class_counts_in = data_in.groupby(['CLASS_ID']).size()
-	class_counts_out = data_err.groupby(['CLASS_ID']).size()
+		except: 
+			print("Warning: Error CSV does not exist", db_res[1])			
+
+	except:
+		return {"Error": "File does not exists", "Path": current_app.config['CSV_PATH'] + db_res[0]}
+
+	
+	return jsonify(counts)
 
 
-	return json.dumps({'Input': {i: c for i, c in enumerate(class_counts_in)}, 'Error': {i: c for i, c in enumerate(class_counts_out)}})
+
