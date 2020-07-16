@@ -28,7 +28,7 @@ class GCNN(pl.LightningModule):
 		super(GCNN, self).__init__()
 
 		self.config = config_dict
-		print(len(self.config))
+		# print(len(self.config))
 
 		self.conv_layers = OrderedDict()
 
@@ -228,21 +228,18 @@ class GCNN(pl.LightningModule):
 				'train_recall': recall(logits, target),
 				'train_prec'  : precision(logits, target)}
 
-		pp.pprint(logs)
+		# pp.pprint(logs)
 		return {'loss': loss, 'log': logs}
 
-	def test_step(self, batch, batch_idx):
-		v, c, m, target = batch
-		logits = self.forward(v,c,m)
-		loss = self.model_loss(logits, target)
+	def training_epoch_end(self, outputs):
+		logs = {}
 
-		logs = {'test_loss'  : loss,
-				'test_acc'   : accuracy(logits, target),
-				'test_recall': recall(logits, target),
-				'test_prec'  : precision(logits, target)}
+		logs['train_loss_mean']    = torch.stack([x['log']['train_loss'] for x in outputs]).mean()
+		logs['train_acc_mean']     = torch.stack([x['log']['train_acc'] for x in outputs]).mean()
+		logs['train_recall_mean']  = torch.stack([x['log']['train_recall'] for x in outputs]).mean()
+		logs['train_prec_mean']    = torch.stack([x['log']['train_prec'] for x in outputs]).mean()
 
-		pp.pprint(logs)
-		return {'loss': loss, 'log' : logs}
+		return {"log": logs}
 
 	def validation_step(self, batch, batch_idx):
 		v, c, m, target = batch
@@ -254,5 +251,38 @@ class GCNN(pl.LightningModule):
 				'val_recall': recall(logits, target),
 				'val_prec'  : precision(logits, target)}
 
-		pp.pprint(logs)
+		# pp.pprint(logs)
+		return {"loss": loss, 'log' : logs}
+
+	def validation_epoch_end(self, outputs):
+		logs = {}
+
+		logs['val_loss_mean']    = torch.stack([x['log']['val_loss'] for x in outputs]).mean()
+		logs['val_acc_mean']     = torch.stack([x['log']['val_acc'] for x in outputs]).mean()
+		logs['val_recall_mean']  = torch.stack([x['log']['val_recall'] for x in outputs]).mean()
+		logs['val_prec_mean']    = torch.stack([x['log']['val_prec'] for x in outputs]).mean()
+
+		return {"log": logs}
+
+	def test_step(self, batch, batch_idx):
+		v, c, m, target = batch
+		logits = self.forward(v,c,m)
+		loss = self.model_loss(logits, target)
+
+		logs = {'test_loss'  : loss,
+				'test_acc'   : accuracy(logits, target),
+				'test_recall': recall(logits, target),
+				'test_prec'  : precision(logits, target)}
+
+		# pp.pprint(logs)
 		return {'loss': loss, 'log' : logs}
+
+	def test_epoch_end(self, outputs):
+		logs = {}
+
+		logs['test_loss_mean']    = torch.stack([x['log']['test_loss'] for x in outputs]).mean()
+		logs['test_acc_mean']     = torch.stack([x['log']['test_acc'] for x in outputs]).mean()
+		logs['test_recall_mean']  = torch.stack([x['log']['test_recall'] for x in outputs]).mean()
+		logs['test_prec_mean']    = torch.stack([x['log']['test_prec'] for x in outputs]).mean()
+
+		return {"log": logs}

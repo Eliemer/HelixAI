@@ -244,7 +244,7 @@ def parse_pdb(path, chain, all_chains=False, first=False):
     return data
 
 def tensorize_pdb(conf):
-    print('### Start tensorize_pdb ###')
+    print('\n\n### Start tensorize_pdb ###')
     with open(conf['input_csv'], newline='') as csvfile:
         ### Multiprocess
         # with ProcessPoolExecutor() as executor:
@@ -254,7 +254,7 @@ def tensorize_pdb(conf):
         for row in csv.DictReader(csvfile):
             tensorize(row, conf['pdb'], conf['tensors'])
 
-    print('### End tensorize_pdb ###')
+    print('### End tensorize_pdb ###\n\n')
 
 def tensorize(pdb_row, path, tensor):
     pdb_id = pdb_row['PDB_ID'].lower()
