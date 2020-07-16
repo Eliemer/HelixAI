@@ -29,10 +29,10 @@ def login_required(view):
 	return wrapped_view
 
 
-@bp.route('/index')
-@login_required
-def index():
-	return 
+# @bp.route('/index')
+# @login_required
+# def index():
+# 	return 
 
 @bp.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -44,12 +44,17 @@ def upload_file():
 		file = request.files['file']
 		# if user does not select file, browser also
 		# submit an empty part without filename
+
 		if file.filename == '':
 			flash('No selected file')
 			return {"Error": "No selected file"}
 		if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
-				file.save(os.path.join(current_app.config['CSV_PATH'], filename))
+
+				if not os.path.exists(os.path.join(current_app.config['CSV_PATH'], filename)) or request.form['replace']=="true":
+					file.save(os.path.join(current_app.config['CSV_PATH'], filename))
+				else:
+					return {"Error": "input_csv already exists in filesystem", "filename": filename}
 
 				return insert_dataset_to_db(filename, request.form['dataset_name'])
 
@@ -64,11 +69,15 @@ def insert_dataset_to_db(filename, dataset_name=None):
 	db = get_db()
 
 	if dataset_name is not None:
-		exists = db.execute("SELECT dataset_id FROM Dataset WHERE input_csv=?", [filename]).fetchone()
+		exists = db.execute("SELECT dataset_id, dataset_name FROM Dataset WHERE input_csv=?", [filename]).fetchone()
 
 		if exists is not None:
+
+
 			flash("Dataset already exists")
-			return {"Error": "input_csv already exists", "dataset_id": exists}
+			return jsonify({**dict(exists), **{"Error": "input_csv already exists in database", "filename": filename}})
+		
+
 		else:
 			db.execute(
 				"INSERT INTO Dataset (dataset_name, input_csv) VALUES (?,?)",
@@ -77,7 +86,7 @@ def insert_dataset_to_db(filename, dataset_name=None):
 
 			db.commit()
 
-			return {"dataset_id": db.execute("SELECT dataset_id FROM Dataset WHERE input_csv=?", [filename]).fetchone()}
+			return jsonify(dict(db.execute("SELECT dataset_id, dataset_name FROM Dataset WHERE input_csv=?", [filename]).fetchone()))
 
 
 

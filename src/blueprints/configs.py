@@ -85,3 +85,24 @@ def search_by_config_path(config_path):
     db_res = db.execute("SELECT * FROM ConfigFile WHERE config_path=(?)", [config_path]).fetchone()
 
     return jsonify(dict(db_res))
+
+@bp.route('/order_by_dataset')
+def all_configs_by_dataset():
+    configs = []
+
+    db = get_db()
+    db_res = db.execute(
+        ("SELECT ConfigFile.config_path, ConfigFile.config_id, Dataset.dataset_name, Dataset.dataset_id "
+        "FROM ConfigFile INNER JOIN DatasetConfig ON ConfigFile.config_id=DatasetConfig.config_id "
+        "INNER JOIN Dataset ON DatasetConfig.dataset_id=Dataset.dataset_id "
+        "ORDER BY Dataset.dataset_id"
+        )
+    )
+
+    for res in db_res:
+        configs.append(dict(res))
+
+    return jsonify(configs)
+
+
+

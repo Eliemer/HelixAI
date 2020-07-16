@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS Creates;
 DROP TABLE IF EXISTS Interpret;
 DROP TABLE IF EXISTS is_Trained;
 DROP TABLE IF EXISTS is_Interpreted;
+DROP TABLE IF EXISTS DatasetConfig;
 
 
 CREATE TABLE Login(
@@ -98,3 +99,10 @@ CREATE TABLE is_Interpreted(
   FOREIGN KEY (attr_id) REFERENCES attributions(attr_id),
   FOREIGN KEY (model_id) REFERENCES model(model_id),
   PRIMARY KEY (model_id, attr_id) );
+
+CREATE TABLE DatasetConfig (
+  config_id INTEGER,
+  dataset_id INTEGER,
+  FOREIGN KEY (config_id) REFERENCES ConfigFile(config_id),
+  FOREIGN KEY (dataset_id) REFERENCES Dataset(dataset_id),
+  PRIMARY KEY (config_id, dataset_id) );

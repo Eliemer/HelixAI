@@ -65,6 +65,9 @@ def init_db():
     db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?)', data)
 
     # Model
+    data = [(i, random_string(10), random.random(), random.uniform(0,0.010)) for i in range(40)]
+    db.executemany('INSERT INTO Model VALUES (?,?,?,?)', data)
+
     # Pdbs
     # Attributions
 
@@ -72,6 +75,16 @@ def init_db():
     data = [(random.randint(0, 24), random.randint(0,24)) for _ in range(75)]
     data = list(set(data)) # removes duplicates
     db.executemany('INSERT INTO Trains VALUES (?,?)', data)
+
+    # Interpret
+    data = [(random.randint(0, 24), random.randint(0,39)) for _ in range(75)]
+    data = list(set(data))
+    db.executemany('INSERT INTO Interpret VALUES (?,?)', data)
+
+    # DatasetConfig
+    data = [(random.randint(0,24), random.randint(0,35)) for _ in range(45)]
+    data = list(set(data))
+    db.executemany('INSERT INTO DatasetConfig VALUES (?,?)', data)
 
     db.commit()
     print("Finished")

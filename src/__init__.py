@@ -46,13 +46,13 @@ def create_app(test_config=None):
 
         
     # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    # @app.route('/hello')
+    # def hello():
+    #     return 'Hello, World!'
 
-    @app.route('/index')
-    def index():
-        return 'This is the index'
+    # @app.route('/index')
+    # def index():
+    #     return 'This is the index'
 
     # @app.route('/base_config')
     # def base_config():
@@ -63,10 +63,11 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
-    from .blueprints import auth, dashboard, configs, deep_learn
+    from .blueprints import auth,dashboard,configs,deep_learn,user
     app.register_blueprint(auth.bp)
     app.register_blueprint(dashboard.bp)
     app.register_blueprint(configs.bp)
     app.register_blueprint(deep_learn.bp)
+    app.register_blueprint(user.bp)
 
     return app

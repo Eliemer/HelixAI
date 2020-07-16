@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, session, request
-# from src.blueprints.auth import login_required
+from flask import jsonify
 from src.db import get_db
 import functools
 import os
@@ -19,3 +19,21 @@ def train_model():
         trainer = pl.Trainer()
 
         trainer.fit(model)
+
+@bp.route('get_models/<user_id>', methods=['GET'])
+def get_models_from_user(user_id):
+	models = []
+
+	db = get_db()
+	db_res = db.execute(
+		("SELECT User.user_id, Model.* "
+		"FROM User INNER JOIN Interpret USING(user_id) "
+		"INNER JOIN Model USING(model_id)"
+		"WHERE User.user_id=?"),
+		(user_id,)
+	).fetchall()
+
+	for res in db_res:
+		models.append(dict(res))
+
+	return jsonify(models)
