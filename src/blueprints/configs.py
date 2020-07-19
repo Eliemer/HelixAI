@@ -1,8 +1,10 @@
 from flask import Blueprint, flash, g, current_app, session, url_for, request
 from flask import jsonify
 from src.db import get_db
-from src.blueprints.auth import login_required
 from werkzeug.utils import secure_filename
+
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
+
 import json
 import functools
 import os
@@ -10,6 +12,7 @@ import tempfile
 
 bp = Blueprint('configs', __name__, url_prefix='/configs')
 ALLOWED_EXTENSIONS = {'json'}
+
 # CONFIG_PATH = './pytorch_lightning_src/Configs'
 
 def allowed_file(filename):
@@ -20,6 +23,7 @@ def allowed_file(filename):
 
 
 @bp.route('/', methods=('POST',))
+@fresh_jwt_required
 def create_new_config():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -62,6 +66,10 @@ def insert_conf_to_db(filename):
 
         db.commit()
 
+        ### Missing insert in all relations
+
+
+
         return jsonify(dict(
             db.execute(
                     "SELECT * FROM ConfigFile WHERE config_path=?",
@@ -86,11 +94,11 @@ def display_all_config_files():
         return jsonify(configs)
 
 @bp.route('/user', methods=('GET',))
-@login_required
-def display_user_config_files(user_id):
+@jwt_required
+def display_user_config_files():
     if request.method == 'GET':
 
-        user_id = user_id['login_id']
+        user_id = get_jwt_identity()
 
         configs = []
 

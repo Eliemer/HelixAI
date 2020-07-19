@@ -5,7 +5,12 @@ from flask import session, url_for, current_app, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from src.db import get_db
 
-import jwt
+from flask_jwt_extended import (
+    jwt_required, create_access_token, 
+    create_refresh_token, jwt_refresh_token_required,
+    get_jwt_identity, fresh_jwt_required
+)
+
 from datetime import datetime, timedelta
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -32,11 +37,19 @@ def register():
 
         if error is None:
             db.execute(
-                'INSERT INTO Login (user_name, password) VALUES (?, ?, ?)',
-                (username, generate_password_hash(password), False)
+                'INSERT INTO Login (user_name, password) VALUES (?, ?)',
+                (username, generate_password_hash(password))
             )
             db.commit()
-            return jsonify(dict(db.execute('SELECT login_id, user_name FROM Login WHERE user_name=?', [username]).fetchone()))
+            
+            ret = {
+                "access_token": create_access_token(identity=username, fresh=True),
+                "refresh_token": create_refresh_token(identity=username)
+            }
+
+            ### SUCCESS ###
+            return jsonify(ret), 200
+
         else:
             return jsonify({"Error": error})
 
@@ -65,74 +78,101 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
-            token = jwt.encode({
-                'sub': username,
-                'iat': datetime.utcnow(),
-                'exp': datetime.utcnow() + timedelta(minutes=30)},
-                current_app.config['SECRET_KEY']
-                )
 
-            return jsonify({"access_token": token.decode('UTF-8')})
+            ret = {
+                "access_token": create_access_token(identity=user['login_id'], fresh=True),
+                "refresh_token": create_refresh_token(identity=user['login_id'])
+            }
+
+            return jsonify(ret), 200
+
         else:
             return jsonify({"Error": error, "authenticated": False}), 401        
 
 
-@bp.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
+@bp.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def new_access_token():
+    new_token = create_access_token(identity=get_jwt_identity(), fresh=False)
+    return jsonify({"access_token": new_token}), 200
 
-    if user_id is None:
-        g.user = None
 
-    else:
-        g.user = get_db().execute(
-            	'SELECT * FROM User WHERE id = ?', (user_id, )
+@bp.route('/fresh_login', methods=['POST'])
+def refresh_login_credentials():
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+
+        if not username:
+            return jsonify({"Error": "Empty username field"}), 401
+
+        db = get_db()
+        error = None
+        user = db.execute(
+            'SELECT * FROM Login WHERE user_name = ?', (username,)
         ).fetchone()
 
+        if user is None:
+            error = 'Incorrect username.'
+        elif not check_password_hash(user['password'], password):
+            error = 'Incorrect password.'
 
-@bp.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
+        if error is None:
+            ret = {
+                "access_token": create_access_token(identity=user['login_id'], fresh=True),
+            }
 
-def login_required(view):
-    @functools.wraps(view)
-    def _verify(*args, **kwargs):
-        auth_headers = request.headers.get('Authorization', '').split()
+            return jsonify(ret), 200
 
-        invalid = {
-            'Error': 'invalid token.',
-            'authenticated': False
-        }
+        else:
+            return jsonify({"Error": error, "authenticated": False}), 401
 
-        expired = {
-            'Error': 'expired token.',
-            'authenticated': False
-        }
 
-        if len(auth_headers) != 2:
-            return jsonify(invalid), 401
+# @bp.route('/logout')
+# def logout():
+#     session.clear()
+#     return redirect(url_for('index'))
 
-        try:
-            db = get_db()
+# def login_required(view):
+#     @functools.wraps(view)
+#     def _verify(*args, **kwargs):
+#         auth_headers = request.headers.get('Authorization', '').split()
 
-            token = auth_headers[1]
-            data = jwt.decode(token, current_app.config['SECRET_KEY'])
+#         invalid = {
+#             'Error': 'invalid token.',
+#             'authenticated': False
+#         }
 
-            print(data['sub'], type(data['sub']))
+#         expired = {
+#             'Error': 'expired token.',
+#             'authenticated': False
+#         }
 
-            user = dict(db.execute(
-                "SELECT login_id, user_name FROM Login WHERE user_name=(?)", [data['sub']]
-                ).fetchone())
+#         if len(auth_headers) != 2:
+#             return jsonify(invalid), 401
 
-            if not user:
-                raise RunTimeError("User not found")
-            return view(user, *args, **kwargs)
+#         try:
+#             db = get_db()
 
-        except jwt.ExpiredSignatureError:
-            return jsonify(expired), 401
+#             token = auth_headers[1]
+#             data = jwt.decode(token, current_app.config['SECRET_KEY'])
 
-        except (jwt.InvalidTokenError):
-            return jsonify(invalid), 401
+#             print(data['sub'], type(data['sub']))
 
-    return _verify
+#             user = dict(db.execute(
+#                 "SELECT login_id, user_name FROM Login WHERE user_name=(?)", [data['sub']]
+#                 ).fetchone())
+
+#             if not user:
+#                 raise RunTimeError("User not found")
+#             return view(user, *args, **kwargs)
+
+#         except jwt.ExpiredSignatureError:
+#             return jsonify(expired), 401
+
+#         except (jwt.InvalidTokenError):
+#             return jsonify(invalid), 401
+
+#     return _verify

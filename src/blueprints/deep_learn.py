@@ -1,7 +1,8 @@
 from flask import Blueprint, flash, g, session, request
 from flask import jsonify, current_app
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
+
 from src.db import get_db
-from src.blueprints.auth import login_required
 import functools
 import os
 
@@ -44,7 +45,7 @@ def train(config):
 
 
 @bp.route('/train/raw', methods=('GET', 'POST'))
-@login_required
+@fresh_jwt_required
 def train_with_raw():
 	if request.method == 'POST':
 		request.get_data()
@@ -62,7 +63,7 @@ def train_with_raw():
 		return train(config)
 
 @bp.route('/train/config/path/<config_path>', methods=("GET", "POST"))
-@login_required
+@fresh_jwt_required
 def train_with_file(config_path):
 	with open(os.path.join(current_app.config['CONFIG_PATH'], config_path), 'r') as fp:
 		config = json.load(fp)
@@ -76,11 +77,11 @@ def train_with_file(config_path):
 
 
 @bp.route('/get_models', methods=['GET'])
-@login_required
-def get_models_from_user(token):
+@jwt_required
+def get_models_from_user():
 	models = []
 
-	user_id = token['login_id']
+	user_id = get_jwt_identity()
 
 	db = get_db()
 	db_res = db.execute(

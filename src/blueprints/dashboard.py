@@ -1,10 +1,9 @@
 from flask import Blueprint, flash, g, request, session, url_for
 from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
-
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_claims
 
 from src.db import get_db
-from src.blueprints.auth import login_required
 
 import functools
 import json
@@ -23,7 +22,7 @@ def allowed_file(filename):
 	return False
 
 @bp.route('/', methods=['GET', 'POST'])
-@login_required
+@fresh_jwt_required
 def upload_file(current_user):
 	if request.method == 'POST':
 		# check if the post request has the file part
