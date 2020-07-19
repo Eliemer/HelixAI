@@ -59,10 +59,10 @@ def upload_file():
 				return insert_dataset_to_db(filename, request.form['dataset_name'])
 
 		else:
-				return {"Error": "Invalid file"}
+				return {"Error": "Invalid file or filename"}
 
 	elif request.method == 'GET':
-		return "This is /dashboad::GET"
+		return "This is /dashboad/::GET"
 
 
 def insert_dataset_to_db(filename, dataset_name=None):

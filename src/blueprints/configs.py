@@ -8,34 +8,64 @@ import os
 import tempfile
 
 bp = Blueprint('configs', __name__, url_prefix='/configs')
+ALLOWED_EXTENSIONS = {'json'}
 # CONFIG_PATH = './pytorch_lightning_src/Configs'
 
-
-# @bp.route('/', methods=('POST',))
-# def create_new_config():
-#     if request.method == 'POST':
-#         config = request.form['parameters']
-#         config_name = request.form['config_name']
-#         path = current_app.config['CONFIG_PATH'] 
-#         # validate config_name
-
-#         config_name = path + secure_filename(config_name)
-
-#         db = get_db()
-#         error = None
-
-#         try:
-#             with tempfile.NamedTemporaryFile(dir=CONFIG_PATH, delete=False) as fp:
-#                 json.dump(config, fp)
-
-#             os.replace(fp.name, config_name)
-#         except OSError:
-#             print("Error: Writing Temporary File", config_name)
+def allowed_file(filename):
+    if '.' in filename:
+        if filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+            return True
+    return False
 
 
-#         return 
+@bp.route('/', methods=('POST',))
+def create_new_config():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return {"Error": "No file in form"}
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return {"Error": "No selected file"}
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+
+            if not os.path.exists(os.path.join(current_app.config['CONFIG_PATH'], filename)):
+                file.save(os.path.join(current_app.config['CONFIG_PATH'], filename))
+
+            return insert_conf_to_db(filename)
+
+        else:
+            return {"Error": "Invalid file or filename"}
+
+    elif request.method == 'GET':
+        return "This is /configs/::GET"
 
 
+def insert_conf_to_db(filename):
+    db = get_db()
+
+    exists = db.execute("SELECT config_id, config_path FROM ConfigFile WHERE config_path=?", [filename]).fetchone()
+
+    if exists is not None:
+        return jsonify({**dict(exists), **{"Error": "Config file already exists in database", "filename": filename}})
+
+    else:
+        db.execute(
+            "INSERT INTO ConfigFile (config_path) VALUES (?)",
+            [filename]
+
+        )
+
+        db.commit()
+
+        return jsonify(dict(
+            db.execute(
+                    "SELECT * FROM ConfigFile WHERE config_path=?",
+                    [filename]
+                ).fetchone()))
 
 
 @bp.route('/all', methods=('GET',))
