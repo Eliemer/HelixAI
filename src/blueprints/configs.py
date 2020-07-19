@@ -8,7 +8,7 @@ import os
 import tempfile
 
 bp = Blueprint('configs', __name__, url_prefix='/configs')
-CONFIG_PATH = './pytorch_lightning_src/Configs'
+# CONFIG_PATH = './pytorch_lightning_src/Configs'
 
 
 # @bp.route('/', methods=('POST',))

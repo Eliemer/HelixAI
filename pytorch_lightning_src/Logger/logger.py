@@ -8,10 +8,15 @@ class JSONLogger(LightningLoggerBase):
 
 	def __init__(self, path, name):
 		super(JSONLogger, self).__init__()
-		self._save_dir = path
-		self._name = name
+		# self._save_dir = path
 
-		with open(path, 'w') as fp:
+		self._name = name
+		self._save_dir = os.path.join(path, name + ".json")
+
+		os.makedirs(path, exist_ok=True)
+
+
+		with open(self._save_dir, 'w') as fp:
 			json.dump([], fp)
 
 	def log_hyperparams(self, params):
@@ -36,5 +41,4 @@ class JSONLogger(LightningLoggerBase):
 
 	@property
 	def name(self):
-		return self._name
-	
+		return self._save_dir.split('.').pop(0)

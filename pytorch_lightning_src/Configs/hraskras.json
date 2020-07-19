@@ -1,0 +1,31 @@
+{
+  "dataset" : "hras_kras",
+  "epochs" : 100,
+  "batch" : 20,
+  "shuffle" : true,
+  "split" : [0.7, 0.1, 0.2],
+  "callback" : 10,
+  "fuzzy_radius" : 0.05,
+  "augment" : 5,
+  "is_weighted" : true,
+  "workers" : 15,
+  "input_csv" : "pdb_extractor/HRAS_KRAS/data.csv",
+  "error_csv" : "pdb_extractor/HRAS_KRAS/error_data.csv",
+  "name" : "Ras_proteins",
+
+  "nb_features" : 29,
+  "nb_classes" : 2,
+  "nb_nodes": 185,
+  "device" : "cuda",
+  "nb_kernels" : 2,
+  "nb_filters" : 64,
+  "nb_conv_layers" : 2,
+  "conv_dropout" : 0.1,
+  "kernel_limit" : 120,
+  "pool_size" : 4,
+  "lin_size" : 128,
+  "lin_dropout" : 0.5,
+  "nb_linear_layers" : 4,
+  "learning_rate" : 0.0001
+
+}

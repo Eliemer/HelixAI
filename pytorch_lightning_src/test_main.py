@@ -25,12 +25,13 @@ def main():
 
         model   = GCNN(my_config)
         logger  = JSONLogger(
-            path="Logs/test_log.json",
+            path="Logs/",
             name=my_config['dataset']
             )
         trainer = pl.Trainer(
             logger=logger, 
-            max_epochs=my_config['epochs'])
+            max_epochs=my_config['epochs'],
+            checkpoint_callback=False)
 
 
         trainer.fit(model)

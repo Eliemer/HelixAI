@@ -32,39 +32,39 @@ class GCNN(pl.LightningModule):
 
 		self.conv_layers = OrderedDict()
 
-		for_nb_nodes = config_dict['nb_nodes']
-		for_nb_features = config_dict['nb_features']
+		for_nb_nodes = int(config_dict['nb_nodes'])
+		for_nb_features = int(config_dict['nb_features'])
 
 		self.adj = AdjacencyMatrix()
 
 		# print(for_nb_nodes, for_nb_features)
-		for i in range(config_dict['nb_conv_layers']):
+		for i in range(int(config_dict['nb_conv_layers'])):
 			self.conv_layers[f'kernel_{i}'] = GraphKernels(
-				nb_kernels=config_dict['nb_kernels'],
+				nb_kernels=int(config_dict['nb_kernels']),
 				nb_nodes=for_nb_nodes,               # X.size()[1],
 				nb_features=for_nb_features,            # X.size()[2],
-				kernel_limit=config_dict['kernel_limit'],
-				batch_size=config_dict['batch'],             # X.size()[0],
+				kernel_limit=int(config_dict['kernel_limit']),
+				batch_size=int(config_dict['batch']),             # X.size()[0],
 				training=None)
 			self.conv_layers[f'conv_{i}'] = GraphConv(
-				nb_filters=config_dict['nb_filters'],
+				nb_filters=int(config_dict['nb_filters']),
 				nb_nodes=for_nb_nodes,               # X.size()[1],
 				nb_features=for_nb_features,            # X.size()[2],
-				support=config_dict['nb_kernels'],
-				batch_size=config_dict['batch'],
+				support=int(config_dict['nb_kernels']),
+				batch_size=int(config_dict['batch']),
 				activation=nn.LeakyReLU(),
 				training=None)
-			for_nb_nodes = max(for_nb_nodes // config_dict['pool_size'], 1)
-			for_nb_features = config_dict['nb_filters']
+			for_nb_nodes = max(for_nb_nodes // int(config_dict['pool_size']), 1)
+			for_nb_features = int(config_dict['nb_filters'])
 
 		self.conv_layers = nn.ModuleDict(self.conv_layers)
-		self.convdrop = nn.Dropout(p=config_dict['conv_dropout'])
-		self.avgpool = AverageSeqGraphPool(pool_size=config_dict['pool_size'])
+		self.convdrop = nn.Dropout(p=float(config_dict['conv_dropout']))
+		self.avgpool = AverageSeqGraphPool(pool_size=int(config_dict['pool_size']))
 
 		self.attention = Attention(
-			nb_nodes=config_dict['nb_nodes'] // (config_dict['pool_size'] ** config_dict['nb_conv_layers']),
-			nb_features=config_dict['nb_filters'],
-			batch_size=config_dict['batch']
+			nb_nodes=int(config_dict['nb_nodes']) // (int(config_dict['pool_size']) ** int(config_dict['nb_conv_layers'])),
+			nb_features=int(config_dict['nb_filters']),
+			batch_size=int(config_dict['batch'])
 		)
 
 
@@ -73,22 +73,22 @@ class GCNN(pl.LightningModule):
 		self.activation = nn.LeakyReLU()
 
 		self.lin_layers = OrderedDict()
-		self.lin_layers['lin_0'] = nn.Linear((config_dict['nb_nodes']
-				// (config_dict['pool_size'] ** config_dict['nb_conv_layers']))
-				* config_dict['nb_filters'],
-				config_dict['lin_size'])
+		self.lin_layers['lin_0'] = nn.Linear((int(config_dict['nb_nodes'])
+				// (int(config_dict['pool_size']) ** int(config_dict['nb_conv_layers'])))
+				* int(config_dict['nb_filters']),
+				int(config_dict['lin_size']))
 
 
-		for j in range(1, config_dict['nb_linear_layers']):
-			self.lin_layers[f'lin_{j}'] = nn.Linear(config_dict['lin_size'], config_dict['lin_size'])
+		for j in range(1, int(config_dict['nb_linear_layers'])):
+			self.lin_layers[f'lin_{j}'] = nn.Linear(int(config_dict['lin_size']), int(config_dict['lin_size']))
 
-		self.lin_drop = nn.Dropout(config_dict['lin_dropout'])
+		self.lin_drop = nn.Dropout(float(config_dict['lin_dropout']))
 
-		for k in range(config_dict['nb_linear_layers']):
-			self.lin_layers[f'norm_{k}'] = nn.BatchNorm1d(config_dict['lin_size'])
+		for k in range(int(config_dict['nb_linear_layers'])):
+			self.lin_layers[f'norm_{k}'] = nn.BatchNorm1d(int(config_dict['lin_size']))
 		self.lin_layers = nn.ModuleDict(self.lin_layers)
 
-		self.answer = nn.Linear(config_dict['lin_size'], config_dict['nb_classes'])
+		self.answer = nn.Linear(int(config_dict['lin_size']), int(config_dict['nb_classes']))
 
 	def prepare_data(self):
 
@@ -100,9 +100,20 @@ class GCNN(pl.LightningModule):
 		path = self.config['tensors']
 		if path[-1] != '/': path += '/'
 
+		try:
+			in_df = pd.read_csv(self.config['input_csv'])
+		except FileNotFoundError:
+			return {"Error": "Input CSV not found"}
+
+		# try:
+		err_df = pd.read_csv(self.config['error_csv'])
+		# except (FileNotFoundError, pd.errors.ParserError):
+		# 	err_df = None
+
+
 		self.data = DatasetProtein(
-			input_df = pd.read_csv(self.config['input_csv']),
-			error_df = pd.read_csv(self.config['error_csv']),
+			input_df = in_df,
+			error_df = err_df,
 			nb_nodes = self.config['nb_nodes'],
 			nb_features = self.config['nb_features'],
 			nb_classes = self.config['nb_classes'],
@@ -262,7 +273,7 @@ class GCNN(pl.LightningModule):
 		logs['val_recall_mean']  = torch.stack([x['log']['val_recall'] for x in outputs]).mean()
 		logs['val_prec_mean']    = torch.stack([x['log']['val_prec'] for x in outputs]).mean()
 
-		return {"log": logs}
+		return {"val_loss": logs['val_loss_mean'], "log": logs}
 
 	def test_step(self, batch, batch_idx):
 		v, c, m, target = batch

@@ -10,10 +10,11 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'capstone.sqlite'),
-        CONFIG_PATH=os.path.join(app.instance_path, 'configuration_files/'),
+        CONFIG_PATH=os.path.join(app.instance_path, 'CONFIG/'),
         PDB_PATH=os.path.join(app.instance_path, 'PDB/'),
         TENSOR_PATH=os.path.join(app.instance_path, 'Tensors/'),
-        CSV_PATH=os.path.join(app.instance_path, 'CSV/')
+        CSV_PATH=os.path.join(app.instance_path, 'CSV/'),
+        LOG_PATH=os.path.join(app.instance_path, 'LOG/'),
     )
 
     if test_config is None:
@@ -27,38 +28,34 @@ def create_app(test_config=None):
     try:
         os.makedirs(app.instance_path)
     except OSError:
-        print("Error: ", sys.exc_info()[0])
+        print("Warning: ", sys.exc_info()[0])
+
+    try:
+        os.makedirs(app.config['CONFIG_PATH'])
+    except OSError:
+        print("Warning: ", sys.exc_info()[0])
 
     try:
         os.makedirs(app.config['PDB_PATH'])
     except OSError:
-        print("Error: ", sys.exc_info()[0])
+        print("Warning: ", sys.exc_info()[0])
 
     try:
         os.makedirs(app.config['TENSOR_PATH'])
     except OSError:
-        print("Error: ", sys.exc_info()[0])
+        print("Warning: ", sys.exc_info()[0])
 
     try:
         os.makedirs(app.config['CSV_PATH'])
     except OSError:
-        print("Error: ", sys.exc_info()[0])
+        print("Warning: ", sys.exc_info()[0])
+
+    try:
+        os.makedirs(app.config['LOG_PATH'])
+    except OSError:
+        print("Warning: ", sys.exc_info()[0])
 
         
-    # a simple page that says hello
-    # @app.route('/hello')
-    # def hello():
-    #     return 'Hello, World!'
-
-    # @app.route('/index')
-    # def index():
-    #     return 'This is the index'
-
-    # @app.route('/base_config')
-    # def base_config():
-    #     import json
-    #     data = json.load(open('tests/configs/base_config.json', 'r'))
-    #     return jsonify(data)
 
     from . import db
     db.init_app(app)

@@ -30,12 +30,16 @@ class DatasetProtein(Dataset):
         try:
             np_chain = np.load(f'{self.path}{str.upper(pdb_id)}_{str.upper(chain)}.npy')
             np_chain = np_chain.astype('float32')
+            # print(np_chain.shape)
 
         except ValueError:
             print(pdb_id, chain, 'Value Error')
 
         except TypeError:
             print(pdb_id, chain, 'Type Error')
+
+        except FileNotFoundError:
+            print(pdb_id, chain, '.npy does not exist')
 
         res = np.zeros([np_chain.shape[0], 23])
         for i in range(np_chain.shape[0]):
