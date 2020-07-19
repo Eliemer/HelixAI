@@ -1,7 +1,11 @@
 from flask import Blueprint, flash, g, request, session, url_for
 from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
+
+
 from src.db import get_db
+from src.blueprints.auth import login_required
+
 import functools
 import json
 import os
@@ -18,24 +22,9 @@ def allowed_file(filename):
 			return True
 	return False
 
-
-def login_required(view):
-	@functools.wraps(view)
-	def wrapped_view(**kwargs):
-		if g.user is None:
-			return redirect(url_for('auth.login'))
-
-		return view(**kwargs)
-	return wrapped_view
-
-
-# @bp.route('/index')
-# @login_required
-# def index():
-# 	return 
-
 @bp.route('/', methods=['GET', 'POST'])
-def upload_file():
+@login_required
+def upload_file(current_user):
 	if request.method == 'POST':
 		# check if the post request has the file part
 		if 'file' not in request.files:

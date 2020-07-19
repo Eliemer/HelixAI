@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, g, current_app, session, url_for, request
 from flask import jsonify
 from src.db import get_db
+from src.blueprints.auth import login_required
 from werkzeug.utils import secure_filename
 import json
 import functools
@@ -84,15 +85,19 @@ def display_all_config_files():
 
         return jsonify(configs)
 
-@bp.route('/user/<user_id>', methods=('GET',))
+@bp.route('/user', methods=('GET',))
+@login_required
 def display_user_config_files(user_id):
     if request.method == 'GET':
+
+        user_id = user_id['login_id']
+
         configs = []
 
         ### make sql query for all config files associated with user_id ###
         db = get_db()
         db_res = db.execute(
-            'SELECT Trains.config_id, config_path FROM Trains INNER JOIN ConfigFile ON ConfigFile.config_id = Trains.config_id WHERE user_id = ?', (user_id,)
+            'SELECT Trains.config_id, config_path FROM Trains INNER JOIN ConfigFile ON ConfigFile.config_id = Trains.config_id WHERE user_id = ?', [user_id]
         )
 
         for res in db_res:

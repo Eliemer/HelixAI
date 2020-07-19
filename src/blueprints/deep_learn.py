@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, g, session, request
 from flask import jsonify, current_app
 from src.db import get_db
+from src.blueprints.auth import login_required
 import functools
 import os
 
@@ -43,6 +44,7 @@ def train(config):
 
 
 @bp.route('/train/raw', methods=('GET', 'POST'))
+@login_required
 def train_with_raw():
 	if request.method == 'POST':
 		request.get_data()
@@ -59,7 +61,8 @@ def train_with_raw():
 
 		return train(config)
 
-@bp.route('train/config/path/<config_path>', methods=("GET", "POST"))
+@bp.route('/train/config/path/<config_path>', methods=("GET", "POST"))
+@login_required
 def train_with_file(config_path):
 	with open(os.path.join(current_app.config['CONFIG_PATH'], config_path), 'r') as fp:
 		config = json.load(fp)
@@ -72,16 +75,19 @@ def train_with_file(config_path):
 		return train(config)
 
 
-@bp.route('get_models/<user_id>', methods=['GET'])
-def get_models_from_user(user_id):
+@bp.route('/get_models', methods=['GET'])
+@login_required
+def get_models_from_user(token):
 	models = []
+
+	user_id = token['login_id']
 
 	db = get_db()
 	db_res = db.execute(
-		("SELECT User.user_id, Model.* "
-		"FROM User INNER JOIN Interpret USING(user_id) "
-		"INNER JOIN Model USING(model_id)"
-		"WHERE User.user_id=?"),
+		("SELECT Model.* "
+		"FROM Interpret "
+		"INNER JOIN Model USING(model_id) "
+		"WHERE Interpret.user_id=?"),
 		(user_id,)
 	).fetchall()
 
