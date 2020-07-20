@@ -60,9 +60,9 @@ def init_db():
     db.executemany('INSERT INTO ConfigFile VALUES (?,?)', data)
 
     # Dataset
-    data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
-    data.append([len(data), 'my_dataset', 0, 0, 'test_input.csv', 'test_error.csv'])
-    db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?)', data)
+    data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
+    data.append([len(data), 'my_dataset', 0, 0, 0, 0, 'test_input.csv', 'test_error.csv'])
+    db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?,?,?)', data)
 
     # Model
     data = [(i, random_string(10), random.random(), random.uniform(0,0.010)) for i in range(40)]

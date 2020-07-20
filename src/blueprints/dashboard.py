@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_claims
 
 from src.db import get_db
 
+from itertools import zip_longest
 import functools
 import json
 import os
@@ -23,28 +24,23 @@ def allowed_file(filename):
 
 @bp.route('/', methods=['GET', 'POST'])
 @fresh_jwt_required
-def upload_file(current_user):
+def upload_file():
 	if request.method == 'POST':
-		# check if the post request has the file part
 		if 'file' not in request.files:
-			flash('No file part')
 			return {"Error": "No file in form"}
+
 		file = request.files['file']
-		# if user does not select file, browser also
-		# submit an empty part without filename
 
 		if file.filename == '':
-			flash('No selected file')
 			return {"Error": "No selected file"}
+
 		if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
 
-				if not os.path.exists(os.path.join(current_app.config['CSV_PATH'], filename)) or request.form['replace']=="true":
+				if not os.path.exists(os.path.join(current_app.config['CSV_PATH'], filename)):
 					file.save(os.path.join(current_app.config['CSV_PATH'], filename))
-				else:
-					return {"Error": "input_csv already exists in filesystem", "filename": filename}
 
-				return insert_dataset_to_db(filename, request.form['dataset_name'])
+				return insert_dataset_to_db(filename)
 
 		else:
 				return {"Error": "Invalid file or filename"}
@@ -53,28 +49,42 @@ def upload_file(current_user):
 		return "This is /dashboad/::GET"
 
 
-def insert_dataset_to_db(filename, dataset_name=None):
+def insert_dataset_to_db(filename):
 	db = get_db()
 
-	if dataset_name is not None:
-		exists = db.execute("SELECT dataset_id, dataset_name FROM Dataset WHERE input_csv=?", [filename]).fetchone()
+	exists = db.execute("SELECT dataset_id, dataset_name FROM Dataset WHERE input_csv=?", [filename]).fetchone()
 
-		if exists is not None:
+	if exists is not None:
+		return jsonify({**dict(exists), **{"Error": "input_csv already exists in database", "filename": filename}})
+	
+	else:
+		count = count_classes(filename)
+		print(count)
+		in_count, err_count = count['Input'], count['Error']
+
+		counts = [0] * 4
+		for key in in_count:
+			y = in_count[key]
+			try:
+				x = err_count[key]
+			except KeyError:
+				x = 0
+			counts[key] = y - x
 
 
-			flash("Dataset already exists")
-			return jsonify({**dict(exists), **{"Error": "input_csv already exists in database", "filename": filename}})
-		
 
-		else:
-			db.execute(
-				"INSERT INTO Dataset (dataset_name, input_csv) VALUES (?,?)",
-				[dataset_name, filename]
-			)
+		print(counts)
 
-			db.commit()
+		db.execute(
+			"INSERT INTO Dataset (dataset_name, input_csv, num_pdbs_class1, num_pdbs_class2, num_pdbs_class3, num_pdbs_class4 ) VALUES (?,?,?,?,?,?)",
+			[
+				filename, filename, *counts
+			]
+		)
 
-			return jsonify(dict(db.execute("SELECT dataset_id, dataset_name FROM Dataset WHERE input_csv=?", [filename]).fetchone()))
+		db.commit()
+
+		return jsonify(dict(db.execute("SELECT * FROM Dataset WHERE input_csv=?", [filename]).fetchone()))
 
 
 
@@ -93,34 +103,38 @@ def all_datasets():
 
 	return jsonify(datasets)
 
-@bp.route('/count_classes/<dataset_name>', methods=('GET',))
-def count_classes(dataset_name):
+# @bp.route('/count_classes/<dataset_name>', methods=('GET',))
+def count_classes(dataset_name, error='dummy_error.csv'):
+
+	# counts = {}
+	# db = get_db()
+	# db_res = db.execute(
+	# 	'SELECT input_csv, error_csv FROM Dataset WHERE dataset_name=?', 
+	# 	[dataset_name]
+	# ).fetchone()
 
 	counts = {}
-	db = get_db()
-	db_res = db.execute(
-		'SELECT input_csv, error_csv FROM Dataset WHERE dataset_name=?', 
-		[dataset_name]
-	).fetchone()
+
 	try:
-		data_in = pd.read_csv(current_app.config['CSV_PATH'] + db_res[0])	
+		data_in = pd.read_csv(current_app.config['CSV_PATH'] + dataset_name)	
 		class_counts_in = data_in.groupby(['CLASS_ID']).size()
-		counts['Input'] = {f"class{i}": c for i, c in enumerate(class_counts_in)}
+		counts['Input'] = {i: c for i, c in enumerate(class_counts_in)}
 		counts['Error'] = {}
 
 		try: 
-			data_err = pd.read_csv(current_app.config['CSV_PATH'] + db_res[1])
+			data_err = pd.read_csv(current_app.config['CSV_PATH'] + error)
 			class_counts_out = data_err.groupby(['CLASS_ID']).size()		
-			counts['Error'] = {f"class{i}": c for i, c in enumerate(class_counts_out)}
+			counts['Error'] = {i: c for i, c in enumerate(class_counts_out)}
 
 		except: 
-			print("Warning: Error CSV does not exist", db_res[1])			
+			print("Warning: Error CSV does not exist", dataset_name)			
 
-	except:
-		return {"Error": "File does not exists", "Path": current_app.config['CSV_PATH'] + db_res[0]}
+	except Exception as e:
+		print(e)
+		return {"Error": "File does not exists", "Path": current_app.config['CSV_PATH'] + dataset_name}
 
 	
-	return jsonify(counts)
+	return counts
 
 
 

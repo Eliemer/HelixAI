@@ -43,6 +43,8 @@ CREATE TABLE Dataset (
   dataset_name TEXT,
   num_pdbs_class1 INTEGER,
   num_pdbs_class2 INTEGER,
+  num_pdbs_class3 INTEGER,
+  num_pdbs_class4 INTEGER,
   input_csv TEXT,
   error_csv TEXT);
 
