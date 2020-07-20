@@ -12,7 +12,7 @@
   <script type="text/javascript" src="javascripts/script.js"></script>
 
   <title>Helix-AI</title>
-  <meta name="description" content="Bringing deep insight to protein structures">
+  <meta name="description" content="Bringing the power of Deep Learning to being Insights into Protein Structures">
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -25,7 +25,7 @@
       <h1 class="title">Helix-AI</h1>
     </header>
     <div id="container">
-      <p class="tagline">Bringing deep insight to protein structures</p>
+      <p class="tagline">Bringing the power of Deep Learning to being Insights into Protein Structures</p>
       <div id="main" role="main">
         <div class="download-bar">
         <div class="inner">
@@ -40,20 +40,22 @@
 <a id="what-is-helix-ai" class="anchor" href="#what-is-helix-ai" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is Helix-AI?</h3>
 <p>This application is designed to provide insightful observations on protein structures. Our Graphical Convolutional Neural Network can be trained to classify any protein available in the <a href="https://www.rcsb.org/pdb/static.do?p=general_information/about_pdb/index.html">Protein Data Bank</a> based exclusively on its structural properties, such as:</p>
 <ul>
-<li>coordinates of its residues (x,y,z)</li>
 <li>type of residue</li>
-<li>
+<li>coordinates of its C-alpha residues (x,y,z)</li>
+<li>sinusoidal positional encoding of residue index in primary structure</li>
+<li>orientation of sidechain for each C-alpha</li>
+<li>distance of residue to protein's center of mass</li>
 </ul>
 <p>Once a model is sufficiently well trained, it can be used to create attribution maps, which are then used as heat-maps that are projected back onto the subject protein, usually the proteins with the lowest loss. These painted proteins can provide incredibly useful insight into what structural features were most important to the classification property. You can read more about model attributions <a href="">here</a> and this process being applied to proteins <a href="">here</a>.</p>
 <p>Helix AI is a web application that encapsulates this process and provides the user with a dashboard to manage, configure, and view different models, experiments and hyperparameters. As well as have an embedded PyMol viewer of these painted proteins</p>
 <h3>
 <a id="media" class="anchor" href="#media" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Media</h3>
-<h4>
-<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo</h4>
-<p><a href=""></a></p>
-<h4>
-<a id="elevator-pitch" class="anchor" href="#elevator-pitch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Elevator Pitch</h4>
-<p><a href=""></a></p>
+<h5>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo</h5>
+<p><a href="">Demo</a></p>
+<h5>
+<a id="elevator-pitch" class="anchor" href="#elevator-pitch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Elevator Pitch</h5>
+<p><a href="">Pitch</a></p>
 <h3>
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
 <h3>
