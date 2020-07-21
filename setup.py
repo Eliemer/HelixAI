@@ -2,19 +2,24 @@ from setuptools import setup, find_packages
 
 requires = [
     'flask',
-    'flask-sqlalchemy',
+    'flask_jwt_extended',
+    'flask_cors',
+    'click',
     'torch',
-    'pandas',
     'pytorch_lightning',
+    'pandas',
+    'scipy',
+    'pprint',
+    'requests'
 ]
 
 setup(
-    name='Capstone 2020',
-    version='0.0',
+    name='helix_ai',
+    version='1.0',
     description='Capstone project 2020',
-    author='Eliemer E. Velez, Luis M. Cintron, Jonathan A. Irizarry',
-    author_email='eliemer.velez@upr.edu, luis.cintron16@upr.edu, jonathan.irizarry3@upr.edu',
-    keywords='web flask deep-learning pytorch',
+    author='Eliemer E. Velez, Luis M. Cintron',
+    author_email='eliemer.velez@upr.edu, luis.cintron16@upr.edu',
+    keywords='web protein biology microbiology flask deep-learning pytorch pytorch_lightning',
     packages=find_packages(),
     include_package_data=True,
     install_requires=requires

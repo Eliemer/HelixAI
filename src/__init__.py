@@ -12,7 +12,7 @@ def create_app(test_config=None):
     jwt = JWTManager(app)
 
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY='dev', # replace with random_string(16)
         JWT=jwt,
         DATABASE=os.path.join(app.instance_path, 'capstone.sqlite'),
         CONFIG_PATH=os.path.join(app.instance_path, 'CONFIG/'),

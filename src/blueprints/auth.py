@@ -1,7 +1,7 @@
 import functools
 
-from flask import Blueprint, flash, g, redirect, render_template, request
-from flask import session, url_for, current_app, jsonify
+from flask import Blueprint, flash, g, render_template, request
+from flask import session, current_app, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from src.db import get_db
 
@@ -128,12 +128,6 @@ def refresh_login_credentials():
 
         else:
             return jsonify({"Error": error, "authenticated": False}), 401
-
-
-# @bp.route('/logout')
-# def logout():
-#     session.clear()
-#     return redirect(url_for('index'))
 
 # def login_required(view):
 #     @functools.wraps(view)
