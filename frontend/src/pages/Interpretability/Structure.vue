@@ -8,8 +8,8 @@
           md-selectable="single"
           md-auto-select
         >
-          <md-table-cell>{{ item.config_file }}</md-table-cell>
-          <md-table-cell>{{ item.pdb_name }}</md-table-cell>
+          <md-table-cell  md-label="Config File">{{ item.config_file }}</md-table-cell>
+          <md-table-cell  md-label="PDB Name">{{ item.pdb_name }}</md-table-cell>
           <md-table-cell>
             <md-button class="md-just-icon md-simple md-primary">
               <md-icon>3d_rotation</md-icon>

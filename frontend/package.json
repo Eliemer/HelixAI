@@ -10,17 +10,21 @@
   },
   "dependencies": {
     "@algoz098/vue-player": "^0.4.3",
+    "axios": "^0.19.2",
     "chartist": "0.11.4",
     "chartist-plugin-legend": "^0.6.2",
     "core-js": "^3.6.4",
     "google-maps": "4.2.3",
+    "v-viewer": "^1.5.1",
     "vue": "2.6.11",
     "vue-clickaway": "2.2.2",
     "vue-core-video-player": "^0.1.9",
     "vue-github-buttons": "3.1.0",
     "vue-material": "1.0.0-beta-11",
     "vue-router": "3.1.6",
-    "vue-social-sharing": "2.4.7"
+    "vue-script2": "^2.1.0",
+    "vue-social-sharing": "2.4.7",
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.2.3",

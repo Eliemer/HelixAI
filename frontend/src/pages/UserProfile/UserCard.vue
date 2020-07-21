@@ -15,6 +15,7 @@
   </md-card>
 </template>
 <script>
+
 export default {
   name: "user-card",
   props: {

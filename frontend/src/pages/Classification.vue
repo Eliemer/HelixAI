@@ -45,37 +45,7 @@ export default {
     TrainingCard,
     ConfigTable,
     TrainingChart
-  },
-  data() {
-    return {
-      configs: [
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        }
-      ]
-    };
-  },
-  methods: {
-    addConfigForm(newConfig) {
-      this.config = [...this.configs, newTodo];
-    }
   }
+  
 };
 </script>
