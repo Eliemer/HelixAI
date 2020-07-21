@@ -41,28 +41,23 @@
 <li>orientation of sidechain for each C-alpha</li>
 <li>distance of residue to protein's center of mass</li>
 </ul>
-<p>Once a model is sufficiently well trained, it can be used to create attribution maps, which are then used as heat-maps that are projected back onto the subject protein, usually the proteins with the lowest loss. These painted proteins can provide incredibly useful insight into what structural features were most important to the classification property. You can read more about model attributions <a href="">here</a> and this process being applied to proteins <a href="">here</a>.</p>
+<p>Once a model is sufficiently well trained, it can be used to create attribution maps, which are then used as heat-maps that are projected back onto the subject protein, usually the proteins with the lowest loss. These painted proteins can provide incredibly useful insight into what structural features were most important to the classification property. You can read more about model attributions <a href="https://ai.googleblog.com/2018/03/the-building-blocks-of-interpretability.html">here</a> and this process being applied to proteins <a href="https://www.biorxiv.org/content/10.1101/610444v1">here</a>.</p>
 <p>Helix AI is a web application that encapsulates this process and provides the user with a dashboard to manage, configure, and view different models, experiments and hyperparameters. As well as have an embedded PyMol viewer of these painted proteins</p>
 <h3>
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
-<p>If you're interested in using the model by itself, click <a href="">here</a>. You can also learn more about pytorch and pytorch_lightning <a href="https://pytorch.org/">here</a> and <a href="https://github.com/PytorchLightning/pytorch-lightning">here</a>, respectively. The python requirements are all included in the <code>setup.py</code> script at the root of the project. Simply <code>cd</code> into the project root and run <code>pip install .</code>. As for the frontend, the requirements are as follows:</p>
-<ul>
-<li>vue-cli</li>
-<li>vuex</li>
-<li>vue-md</li>
-<li>...</li>
-</ul>
+<p>If you're interested in using the model by itself, click <a href="https://github.com/Eliemer/GCNN_Lightning">here</a>. You can also learn more about pytorch and pytorch_lightning <a href="https://pytorch.org/">here</a> and <a href="https://github.com/PytorchLightning/pytorch-lightning">here</a>, respectively. The python requirements are all included in the <code>setup.py</code> script at the root of the project. Simply <code>cd</code> into the project root and run <code>pip install .</code>. The frontend (Javascript) requirements are included in a <code>package.json</code> file. Before installing dependencies, you must install <code>npm</code> and <code>vue-cli</code> as directed in the Vue.js official webpage <a href="https://vuejs.org/">here</a>. Then simply <code>cd</code> into <code>root/frontend</code> and run <code>npm install</code>.</p>
 <p>Once all requirements are met, you must export a few environment variables for flask:</p>
 <p>In linux:</p>
 <div class="highlight highlight-source-shell"><pre><span class="pl-k">export</span> FLASK_APP=<span class="pl-s"><span class="pl-pds">'</span>src<span class="pl-pds">'</span></span>
-flask init-db
+flask init_db
 flask run</pre></div>
 <p>In Windows powershell:</p>
 <pre><code>$env:FLASK_APP = "src"
-flask init-db
+flask init_db
 flask run
 </code></pre>
-<p>This turns the Flask server on to receive requests through the REST endpoints. Now we turn on the Vue.js frontend by ...</p>
+<p>This turns the Flask server on to receive requests through the REST endpoints. Important to note that <code>flask init_db</code> is only required on the initial setup of the server. Running it a second time will delete all the information previously stored there. Now we turn on the Vue.js frontend:</p>
+<div class="highlight highlight-source-shell"><pre>npm run serve</pre></div>
 <h3>
 <a id="media" class="anchor" href="#media" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Media</h3>
 <h5>
