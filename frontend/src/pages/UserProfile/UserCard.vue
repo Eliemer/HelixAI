@@ -5,10 +5,10 @@
     </div>
 
     <md-card-content>
-      <h6 class="category text-gray">Work Posotion</h6>
+      <h6 class="category text-gray">Work Position</h6>
       <h4 class="card-title">User</h4>
       <p class="card-description">
-        This is Where you would put yout information or a deep insightfull qoute
+        This is Where you would put yout information or a deep insightfull quote
       </p>
       <md-button class="md-round md-primary">Github</md-button>
     </md-card-content>

@@ -20,6 +20,10 @@
         </md-table-cell>
       </md-table-row>
     </md-table>
+    <md-field>
+      <md-input type="text" placeholder="Add Todos"></md-input>
+    </md-field>
+    <md-button class="md-primary text-right">submit</md-button>
   </div>
 </template>
 

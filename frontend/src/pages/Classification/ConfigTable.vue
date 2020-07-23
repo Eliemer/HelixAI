@@ -1,8 +1,16 @@
 <template>
   <div>
     <md-content>
-      <md-table v-model="allConfigs" :table-header-color="tableHeaderColor">
-        <md-table-row slot="md-table-row" slot-scope="{ item }">
+      <md-table
+        v-model="allConfigs"
+        :table-header-color="tableHeaderColor"
+        @md-selected="onSelect"
+      >
+        <md-table-row
+          slot="md-table-row"
+          slot-scope="{ item }"
+          md-selectable="single"
+        >
           <md-table-cell md-label="ID">{{ item.config_id }}</md-table-cell>
           <md-table-cell md-label="Name">{{ item.config_path }}</md-table-cell>
         </md-table-row>
@@ -12,17 +20,25 @@
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "config-table",
   props: ["tableHeaderColor"],
-  methods: {
-    ...mapActions(['fetchConfigs']) //all configs will be feteched this will be changed to all usr configs
+  data() {
+    return {
+      selected: {}
+    };
   },
-  computed: mapGetters(['allConfigs']),
-  created(){
+  methods: {
+    ...mapActions(["fetchConfigs"]), //all configs will be feteched this will be changed to all usr configs
+    onSelect(item,event) {
+      this.selected = item;
+      this.$emit("to-train", this.selected);
+    }
+  },
+  computed: mapGetters(["allConfigs"]),
+  created() {
     this.fetchConfigs();
-
   }
 };
 </script>

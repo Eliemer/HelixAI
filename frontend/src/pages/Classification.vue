@@ -13,7 +13,10 @@
           <training-chart></training-chart>
         </div>
         <div class="md-layout-item md-large-size-100 md-size-100">
-          <training-card data-background-color="blue"></training-card>
+          <training-card
+            data-background-color="blue"
+            v-bind:item="item"
+          ></training-card>
         </div>
       </div>
       <div class="md-layout-item md-large-size-100 md-size-100">
@@ -25,6 +28,7 @@
             <config-table
               v-bind:configs="configs"
               table-header-color="blue"
+              v-on:to-train="getSelected"
             ></config-table>
           </md-card-content>
         </md-card>
@@ -45,7 +49,16 @@ export default {
     TrainingCard,
     ConfigTable,
     TrainingChart
+  },
+  data(){
+    return {
+      item: {}
+    };
+  },
+  methods: {
+    getSelected(item){
+      this.item = item;
+    }
   }
-  
 };
 </script>

@@ -32,9 +32,9 @@ export default {
     };
   },
   methods: {
-    onSelect(item,event) {
+    onSelect(item, event) {
       this.selected = item;
-      this.$emit('to-interpret',this.selected)
+      this.$emit("to-interpret", this.selected);
     },
     interpretModel(e) {
       e.preventDefault();

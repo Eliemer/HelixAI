@@ -10,23 +10,22 @@
       </md-table-row>
     </md-table>
 
-    <form>
+    <form @submit="upload">
       <div class="md-layout">
         <div class="md-layout-item md-large-size-50 md-size-50">
-          <md-field>
-            <label>Upload CSV</label>
-            <md-file
-              type="file"
-              class="form-control"
-              id="file"
-              name="file"
-              accept="text/csv"
-              v-on:change="onFileChange"
-            />
-          </md-field>
+          <input
+            type="file"
+            id="file"
+            ref="file"
+            accept="text/csv"
+            v-on:change="onFileChange"
+          />
         </div>
-        <div class="md-layout-item md-large-size-50 md-siz-50 text-right" style="padding-top: 10px;">
-          <md-button class="md-primary" @click="upload">Upload</md-button>
+        <div
+          class="md-layout-item md-large-size-50 md-siz-50 text-right"
+          style="padding-top: 10px;"
+        >
+          <md-button type="submit" class="md-primary">Upload</md-button>
         </div>
       </div>
     </form>
@@ -51,37 +50,15 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchDatasets"]),
+    ...mapActions(["fetchDatasets","addDataset"]),
     onFileChange(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-      this.createFile(files[0]);
-    },
-    createFile(file) {
-      let reader = new FileReader();
-      let vm = this;
-      reader.onload = e => {
-        vm.file = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      this.file = this.$refs.file.files[0];
     },
     upload() {
       let data = new FormData();
-      console.log(document.getElementById("file").files[0]);
-      data.append("file", document.getElementById("file").files[0]);
-      axios
-        .post("http://127.0.0.1:5000/dashboard/", data, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        .then(function() {
-          console.log("SUCCESS!!");
-        })
-        .catch(function() {
-          console.log("FAILURE!!");
-        });
-      this.file = null;
+      console.log(this.file);
+      data.append("file", this.file);
+      this.addDataset(data);
     }
   },
   computed: mapGetters(["allDatasets"]),
@@ -95,5 +72,8 @@ export default {
   max-width: 100%;
   max-height: 200px;
   overflow: auto;
+}
+#file{
+  margin-top: 20px;
 }
 </style>

@@ -8,7 +8,9 @@
           md-selectable="single"
           md-auto-select
         >
-          <md-table-cell  md-label="Config File">{{ item.config_file }}</md-table-cell>
+          <md-table-cell md-label="Config File">{{
+            item.config_file
+          }}</md-table-cell>
           <md-table-cell  md-label="PDB Name">{{ item.pdb_name }}</md-table-cell>
           <md-table-cell>
             <md-button class="md-just-icon md-simple md-primary">
@@ -46,10 +48,10 @@ export default {
           pdb_path: "/pdb/Kinases/1atp.pdb"
         },
         {
-          config_file: "config_file_1",
-          pdb_name: "4pka",
-          chain: "E",
-          dataset: "K",
+          config_file: "config_file_2",
+          pdb_name: "4q9z",
+          chain: "A",
+          dataset: "my_dataset",
           loss: 0.00001,
           pdb_path: "/pdb/Ras/1atp.pdb"
         }

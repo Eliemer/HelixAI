@@ -10,8 +10,8 @@
         <div class="md-layout">
           <div class="md-layout-item md-small-size-100 md-size-33">
             <md-field>
-              <label>Company (disabled)</label>
-              <md-input v-model="disabled" disabled></md-input>
+              <label>Company</label>
+              <md-input v-model="disabled"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-small-size-100 md-size-33">
@@ -40,7 +40,7 @@
           </div>
           <div class="md-layout-item md-small-size-100 md-size-100">
             <md-field>
-              <label>Adress</label>
+              <label>Address</label>
               <md-input v-model="address" type="text"></md-input>
             </md-field>
           </div>
@@ -96,8 +96,7 @@ export default {
       city: null,
       country: null,
       code: null,
-      aboutme:
-        "Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
+      aboutme: null
     };
   }
 };
