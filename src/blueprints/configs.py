@@ -27,7 +27,7 @@ def allowed_file(filename):
 def create_new_config():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return {"Error": "No file in form"}
+            return new_conf_from_json(request)
 
         file = request.files['file']
 
@@ -47,6 +47,14 @@ def create_new_config():
 
     elif request.method == 'GET':
         return "This is /configs/::GET"
+
+def new_conf_from_json(request):
+    config = request.get_json()
+    filename = config['name'] + '.json'
+    with open(os.path.join(current_app.config['CONFIG_PATH'],filename), 'w') as fp:
+        json.dump(config, fp)
+
+    return insert_conf_to_db(filename)
 
 
 def insert_conf_to_db(filename):

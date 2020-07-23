@@ -4,6 +4,7 @@ requires = [
     'flask',
     'flask_jwt_extended',
     'flask_cors',
+    'PyJWT'
     'click',
     'torch',
     'pytorch_lightning',
