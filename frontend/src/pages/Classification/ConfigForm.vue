@@ -194,7 +194,9 @@ export default {
     };
   },
   methods: {
-    addConfigForm() {}
+    addConfigForm() {
+      return null;
+    }
   }
 };
 </script>

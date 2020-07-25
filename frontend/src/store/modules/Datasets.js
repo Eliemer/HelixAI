@@ -1,13 +1,15 @@
 import axios from "axios";
 const state = {
   datasets: []
-}
+};
 const getters = {
   allDatasets: state => state.datasets
 };
 const actions = {
   async fetchDatasets({ commit }) {
-    const response = await axios.get('http://127.0.0.1:5000/dashboard/datasets')
+    const response = await axios.get(
+      "http://127.0.0.1:5000/dashboard/datasets"
+    );
     commit("setDatasets", response.data);
   },
   async addDataset({ commit }, formData) {
@@ -34,4 +36,4 @@ export default {
   getters,
   actions,
   mutations
-}
+};

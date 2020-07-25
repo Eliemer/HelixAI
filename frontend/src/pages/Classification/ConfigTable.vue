@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     ...mapActions(["fetchConfigs"]), //all configs will be feteched this will be changed to all usr configs
-    onSelect(item,event) {
+    onSelect(item, event) {
       this.selected = item;
       this.$emit("to-train", this.selected);
     }

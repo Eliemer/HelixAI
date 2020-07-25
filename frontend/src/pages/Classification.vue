@@ -2,11 +2,7 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-large-size-50 md-size-50">
-        <config-form
-          data-background-color="blue"
-          v-on:add-config="addConfigForm"
-        >
-        </config-form>
+        <config-form data-background-color="blue"> </config-form>
       </div>
       <div class="md-layout-item md-large-size-50 md-size-50">
         <div class="md-layout-item md-large-size-100 md-size-100">
@@ -26,7 +22,6 @@
           </md-card-header>
           <md-card-content>
             <config-table
-              v-bind:configs="configs"
               table-header-color="blue"
               v-on:to-train="getSelected"
             ></config-table>
@@ -50,13 +45,13 @@ export default {
     ConfigTable,
     TrainingChart
   },
-  data(){
+  data() {
     return {
       item: {}
     };
   },
   methods: {
-    getSelected(item){
+    getSelected(item) {
       this.item = item;
     }
   }

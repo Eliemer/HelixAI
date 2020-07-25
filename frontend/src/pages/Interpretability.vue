@@ -8,21 +8,27 @@
               <h4 class="title">Trained Models</h4>
             </md-card-header>
             <md-card-content>
-              <model-card v-bind:models="models" table-header-color="blue"></model-card>
+              <model-card
+                v-bind:models="models"
+                table-header-color="blue"
+              ></model-card>
             </md-card-content>
           </md-card>
         </div>
-         <div class="md-layout-item md-large-size-100 md-size-100">
+        <div class="md-layout-item md-large-size-100 md-size-100">
           <md-card>
             <md-card-header data-background-color="blue">
               <h4 class="title">Interpreted Models</h4>
             </md-card-header>
             <md-card-content>
-              <interpret-model v-bind:models="models" table-header-color="blue"></interpret-model>
+              <interpret-model
+                v-bind:models="models"
+                table-header-color="blue"
+                v-on:to-interpret="getSelected"
+              ></interpret-model>
             </md-card-content>
           </md-card>
         </div>
-
       </div>
       <div class="md-layout-item md-large-size-50 md-size 50">
         <div class="md-layout-item md-large-size-100 md-size 100">
@@ -31,13 +37,11 @@
               <h4 class="title">Visualization</h4>
             </md-card-header>
             <md-card-content>
-            <d-viewer />
+              <d-viewer v-bind:item="item" />
             </md-card-content>
           </md-card>
-        
         </div>
       </div>
-      
     </div>
   </div>
 </template>
@@ -75,8 +79,14 @@ export default {
           accuracy: 0.91,
           loss: 0.0001
         }
-      ]
+      ],
+      item: null
     };
+  },
+  methods: {
+    getSelected(item) {
+      this.item = item;
+    }
   }
 };
 </script>

@@ -4,9 +4,15 @@
       <md-table-row slot="md-table-row" slot-scope="{ item }">
         <md-table-cell md-label="ID">{{ item.dataset_id }}</md-table-cell>
         <md-table-cell md-label="Name">{{ item.dataset_name }}</md-table-cell>
-        <md-table-cell md-label="Class 1">{{ item.num_pdbs_class1 }}</md-table-cell>
-        <md-table-cell md-label="Class 2">{{ item.num_pdbs_class2 }}</md-table-cell>
-        <md-table-cell md-label=" Total ">{{ item.num_pdbs_class1 + item.num_pdbs_class2}}</md-table-cell>
+        <md-table-cell md-label="Class 1">{{
+          item.num_pdbs_class1
+        }}</md-table-cell>
+        <md-table-cell md-label="Class 2">{{
+          item.num_pdbs_class2
+        }}</md-table-cell>
+        <md-table-cell md-label=" Total ">{{
+          item.num_pdbs_class1 + item.num_pdbs_class2
+        }}</md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -50,7 +56,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchDatasets","addDataset"]),
+    ...mapActions(["fetchDatasets", "addDataset"]),
     onFileChange(e) {
       this.file = this.$refs.file.files[0];
     },
@@ -73,7 +79,7 @@ export default {
   max-height: 200px;
   overflow: auto;
 }
-#file{
+#file {
   margin-top: 20px;
 }
 </style>

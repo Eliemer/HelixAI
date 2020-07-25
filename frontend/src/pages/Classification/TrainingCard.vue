@@ -31,7 +31,7 @@ export default {
   props: ["item", "dataBackgroundColor"],
   data() {
     return {
-      progress: null,
+      progress: null
     };
   }
 };
