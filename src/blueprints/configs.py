@@ -59,6 +59,7 @@ def new_conf_from_json(request):
 
 def insert_conf_to_db(filename):
     db = get_db()
+    user = get_jwt_identity()
 
     exists = db.execute("SELECT config_id, config_path FROM ConfigFile WHERE config_path=?", [filename]).fetchone()
 
@@ -72,17 +73,20 @@ def insert_conf_to_db(filename):
 
         )
 
+        config_row = dict(db.execute(
+            "SELECT * FROM ConfigFile WHERE config_path=?",
+            [filename]
+        ).fetchone())
+
+        db.execute(
+            "INSERT OR IGNORE INTO Creates VALUES (?,?)",
+            [user, config_row['config_id']]
+        )
+
         db.commit()
 
-        ### Missing insert in all relations
 
-
-
-        return jsonify(dict(
-            db.execute(
-                    "SELECT * FROM ConfigFile WHERE config_path=?",
-                    [filename]
-                ).fetchone()))
+        return jsonify(config_row)
 
 
 @bp.route('/all', methods=('GET',))
@@ -113,7 +117,7 @@ def display_user_config_files():
         ### make sql query for all config files associated with user_id ###
         db = get_db()
         db_res = db.execute(
-            'SELECT Trains.config_id, config_path FROM Trains INNER JOIN ConfigFile ON ConfigFile.config_id = Trains.config_id WHERE user_id = ?', [user_id]
+            'SELECT Creates.config_id, config_path FROM Creates INNER JOIN ConfigFile Using(config_id) WHERE user_id = ?', [user_id]
         )
 
         for res in db_res:

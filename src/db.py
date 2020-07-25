@@ -47,44 +47,44 @@ def init_db():
         return ''.join((random.choice(letters_and_digits) for i in range(length)))
 
 
-    # Login Table
-    data = [(i, random_string(10), random_string(10)) for i in range(25)]
-    db.executemany('INSERT INTO Login VALUES (?,?,?)', data)
+    # # Login Table
+    # data = [(i, random_string(10), random_string(10)) for i in range(25)]
+    # db.executemany('INSERT INTO Login VALUES (?,?,?)', data)
 
-    # Users Table
-    data = [(i, random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), i) for i in range(25)]
-    db.executemany('INSERT INTO User VALUES (?,?,?,?,?,?,?,?,?)', data)
+    # # Users Table
+    # data = [(i, random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), random_string(10), i) for i in range(25)]
+    # db.executemany('INSERT INTO User VALUES (?,?,?,?,?,?,?,?,?)', data)
 
-    # ConfigFile
-    data = [(i, random_string(10)+'.json') for i in range(25)]
-    db.executemany('INSERT INTO ConfigFile VALUES (?,?)', data)
+    # # ConfigFile
+    # data = [(i, random_string(10)+'.json') for i in range(25)]
+    # db.executemany('INSERT INTO ConfigFile VALUES (?,?)', data)
 
-    # Dataset
-    data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
-    data.append([len(data), 'my_dataset', 0, 0, 0, 0, 'test_input.csv', 'test_error.csv'])
-    db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?,?,?)', data)
+    # # Dataset
+    # data = [(i, random_string(10), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random.randint(1,1000), random_string(10)+'.csv', random_string(10)+'.csv') for i in range(35)]
+    # data.append([len(data), 'my_dataset', 0, 0, 0, 0, 'test_input.csv', 'test_error.csv'])
+    # db.executemany('INSERT INTO Dataset VALUES (?,?,?,?,?,?,?,?)', data)
 
-    # Model
-    data = [(i, random_string(10), random.random(), random.uniform(0,0.010)) for i in range(40)]
-    db.executemany('INSERT INTO Model VALUES (?,?,?,?)', data)
+    # # Model
+    # data = [(i, random_string(10), random.random(), random.uniform(0,0.010)) for i in range(40)]
+    # db.executemany('INSERT INTO Model VALUES (?,?,?,?)', data)
 
-    # Pdbs
-    # Attributions
+    # # Pdbs
+    # # Attributions
 
-    # Trains
-    data = [(random.randint(0, 24), random.randint(0,24)) for _ in range(75)]
-    data = list(set(data)) # removes duplicates
-    db.executemany('INSERT INTO Trains VALUES (?,?)', data)
+    # # Trains
+    # data = [(random.randint(0, 24), random.randint(0,24)) for _ in range(75)]
+    # data = list(set(data)) # removes duplicates
+    # db.executemany('INSERT INTO Trains VALUES (?,?)', data)
 
-    # Interpret
-    data = [(random.randint(0, 24), random.randint(0,39)) for _ in range(75)]
-    data = list(set(data))
-    db.executemany('INSERT INTO Interpret VALUES (?,?)', data)
+    # # Interpret
+    # data = [(random.randint(0, 24), random.randint(0,39)) for _ in range(75)]
+    # data = list(set(data))
+    # db.executemany('INSERT INTO Interpret VALUES (?,?)', data)
 
-    # DatasetConfig
-    data = [(random.randint(0,24), random.randint(0,35)) for _ in range(45)]
-    data = list(set(data))
-    db.executemany('INSERT INTO DatasetConfig VALUES (?,?)', data)
+    # # DatasetConfig
+    # data = [(random.randint(0,24), random.randint(0,35)) for _ in range(45)]
+    # data = list(set(data))
+    # db.executemany('INSERT INTO DatasetConfig VALUES (?,?)', data)
 
     db.commit()
     print("Finished")

@@ -20,6 +20,7 @@ def create_app(test_config=None):
         TENSOR_PATH=os.path.join(app.instance_path, 'Tensors/'),
         CSV_PATH=os.path.join(app.instance_path, 'CSV/'),
         LOG_PATH=os.path.join(app.instance_path, 'LOG/'),
+        MODEL_PATH=os.path.join(app.instance_path, 'MODEL/')
     )
 
     if test_config is None:
@@ -60,6 +61,10 @@ def create_app(test_config=None):
     except OSError:
         print("Warning: ", sys.exc_info()[0])
 
+    try:
+        os.makedirs(app.config['MODEL_PATH'])
+    except OSError:
+        print("Warning: ", sys.exc_info()[0])
         
 
     from . import db

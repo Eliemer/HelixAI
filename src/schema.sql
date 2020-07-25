@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS Interpret;
 DROP TABLE IF EXISTS is_Trained;
 DROP TABLE IF EXISTS is_Interpreted;
 DROP TABLE IF EXISTS DatasetConfig;
+DROP TABLE IF EXISTS UserDataset;
 
 
 CREATE TABLE Login(
@@ -50,6 +51,7 @@ CREATE TABLE Dataset (
 
 CREATE TABLE Model(
   model_id INTEGER PRIMARY KEY,
+  model_python_class TEXT,
   model_path TEXT NOT NULL,
   model_accuracy REAL,
   model_loss REAL);
@@ -70,9 +72,18 @@ CREATE TABLE Attributions(
 CREATE TABLE Trains (
   user_id INTEGER,
   config_id INTEGER,
+  model_id INTEGER,
   FOREIGN KEY (user_id) REFERENCES User(user_id),
   FOREIGN KEY (config_id) REFERENCES ConfigFile(config_id),
-  PRIMARY KEY (user_id, config_id));
+  FOREIGN Key (model_id) REFERENCES Model(model_id),
+  PRIMARY KEY (user_id, config_id, model_id));
+
+CREATE TABLE UserDataset(
+  user_id INTEGER,
+  dataset_id INTEGER,
+  FOREIGN KEY(user_id) REFERENCES User(user_id),
+  FOREIGN KEY (dataset_id) REFERENCES Dataset(dataset_id),
+  PRIMARY KEY (user_id, dataset_id));
 
 CREATE TABLE Creates (
   user_id INTEGER,

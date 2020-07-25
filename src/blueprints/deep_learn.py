@@ -6,6 +6,7 @@ from src.db import get_db
 import functools
 import os
 
+import torch
 from pytorch_lightning_src.Model.GCNN import GCNN
 from pytorch_lightning_src.Logger.logger import JSONLogger
 import pytorch_lightning as pl
@@ -18,10 +19,16 @@ def train(config):
 
 	if os.path.exists(config['input_csv']):
 
+		i = 0
+		save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"_{i}_.pt")
+		while(os.path.exists(save_path)):
+			save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"_{i+1}_.pt")
+			i+=1
+
 		model = GCNN(config)
 		logger = JSONLogger(
 			path=current_app.config['LOG_PATH'],
-			name=config['dataset']
+			name=save_path.split('/')[-1].split('.')[0]
 		)
 
 		trainer = pl.Trainer(
@@ -35,13 +42,52 @@ def train(config):
 		)
 
 		trainer.fit(model)
+		trainer.test(model)
 
+		torch.save(model.state_dict(), save_path)
 		metrics = json.load(open(logger.name + ".json", 'r'))
+		model_class = str(type(model))
 
-		return jsonify(metrics)
+		res = insert_model_to_db(save_path.split('/')[-1], metrics, model_class)
+
+		return {"metrics": metrics, "model_details": res}
 
 	else:
 		return {"Error": "Input CSV not found"}
+
+def insert_model_to_db(name, metrics, model_class):
+	db = get_db()
+
+	test_acc = metrics[-1]['test_acc_mean']
+	test_loss = metrics[-1]['test_loss_mean']
+	exists = db.execute(
+		"SELECT * FROM Model WHERE model_path=?",
+		[name]
+	).fetchone()
+
+	if exists is not None:
+		pass
+
+		# exists = dict(exists)
+		# if exists['model_accuracy'] < test_acc and exists['model_loss'] > test_loss:
+		# 	db.execute('UPDATE Model SET model_accuracy=?, model_loss=? WHERE model_id=?',
+		# 		[test_acc, test_loss, exists['model_id']])
+
+	else:
+		db.execute(
+			"INSERT INTO Model(model_python_class, model_path, model_accuracy, model_loss) VALUES (?,?,?,?)",
+			[model_class, 
+			name,
+			test_acc,
+			test_loss])
+
+
+	db.commit()
+	res = db.execute("SELECT * FROM Model WHERE model_path=?",
+		[name]).fetchone()
+
+	return dict(res)
+
 
 
 @bp.route('/train/raw', methods=('GET', 'POST'))
@@ -59,7 +105,6 @@ def train_with_raw():
 		config['tensors']     = current_app.config['TENSOR_PATH']
 		config['pdb']         = current_app.config['PDB_PATH']
 
-
 		return train(config)
 
 @bp.route('/train/config/path/<config_path>', methods=("GET", "POST"))
@@ -73,8 +118,69 @@ def train_with_file(config_path):
 		config['tensors']     = current_app.config['TENSOR_PATH']
 		config['pdb']         = current_app.config['PDB_PATH']
 
-		return train(config)
 
+		train_res = train(config)
+		user_trained = insert_to_db_user_trains(
+			config_path, 
+			get_jwt_identity(),
+			train_res['model_details']['model_path']
+		)
+		is_trained_res = insert_to_db_is_trained(
+			config_path, 
+			train_res['model_details']['model_path']
+		)
+
+		return jsonify({**{"model_path": train_res['model_details']['model_path']}, 
+			**train_res,	
+			**user_trained, 
+			**is_trained_res}), 200
+
+def insert_to_db_user_trains(config_path, user_id, model_path):
+	db = get_db()
+	config_id = db.execute("SELECT * FROM ConfigFile WHERE config_path=?", [config_path]).fetchone()
+	model_id = db.execute("SELECT * FROM Model WHERE model_path=?", [model_path]).fetchone()
+
+	if config_id is not None and model_id is not None:
+
+		config_id = dict(config_id)
+		model_id = dict(model_id)
+
+		db.execute(
+			"INSERT OR IGNORE INTO Trains VALUES (?,?,?)",
+			[user_id, config_id['config_id'], model_id['model_id']]
+		)
+
+		db.commit()
+
+		return {"msg": 200}
+
+	else:
+		return {"Error": "config is not in database"}
+
+def insert_to_db_is_trained(config_path, model_path):
+	db = get_db()
+
+	model_id = db.execute("SELECT model_id FROM Model WHERE model_path=?", [model_path]).fetchone()
+	config_id= db.execute("SELECT config_id FROM ConfigFile WHERE config_path=?", [config_path]).fetchone()
+
+	if model_id is not None and config_id is not None:
+		model_id = dict(model_id)
+		config_id = dict(config_id)
+
+		db.execute('INSERT OR IGNORE INTO is_Trained VALUES (?,?)', [model_id['model_id'], config_id['config_id']])
+
+		db.commit()
+
+		config_row = db.execute("SELECT config_id, config_path FROM is_Trained INNER JOIN ConfigFile USING(config_id) WHERE config_id=?",
+			[config_id['config_id']]).fetchone()
+
+		if config_row is not None:
+			config_id = {**config_id, **dict(config_row)}
+
+		return {**model_id, **config_id}
+
+	else:
+		return {"Error": "model or config file does not exists in DB"}
 
 @bp.route('/get_models', methods=['GET'])
 @jwt_required
@@ -86,9 +192,9 @@ def get_models_from_user():
 	db = get_db()
 	db_res = db.execute(
 		("SELECT Model.* "
-		"FROM Interpret "
-		"INNER JOIN Model USING(model_id) "
-		"WHERE Interpret.user_id=?"),
+		"FROM Trains "
+		"INNER JOIN Model ON Model.model_id=Trains.model_id "
+		"WHERE Trains.user_id=?"),
 		(user_id,)
 	).fetchall()
 

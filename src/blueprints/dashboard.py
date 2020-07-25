@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, request, session, url_for
 from flask import current_app, jsonify
 from werkzeug.utils import secure_filename
-from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_claims
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
 
 from src.db import get_db
 
@@ -81,10 +81,19 @@ def insert_dataset_to_db(filename):
 				filename, filename, *counts
 			]
 		)
+		dataset_row = dict(db.execute(
+			"SELECT * FROM Dataset WHERE input_csv=?", 
+			[filename]).fetchone())
+
+		db.execute(
+			"INSERT OR IGNORE INTO UserDataset VALUES (?,?)",
+			[get_jwt_identity(), dataset_row['dataset_id']]
+		)
+
 
 		db.commit()
 
-		return jsonify(dict(db.execute("SELECT * FROM Dataset WHERE input_csv=?", [filename]).fetchone()))
+		return jsonify(dataset_row), 200
 
 
 
