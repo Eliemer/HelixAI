@@ -2,18 +2,17 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-large-size-50 md-size-50">
-        <config-form
-          data-background-color="blue"
-          v-on:add-config="addConfigForm"
-        >
-        </config-form>
+        <config-form data-background-color="blue"> </config-form>
       </div>
       <div class="md-layout-item md-large-size-50 md-size-50">
         <div class="md-layout-item md-large-size-100 md-size-100">
           <training-chart></training-chart>
         </div>
         <div class="md-layout-item md-large-size-100 md-size-100">
-          <training-card data-background-color="blue"></training-card>
+          <training-card
+            data-background-color="blue"
+            v-bind:item="item"
+          ></training-card>
         </div>
       </div>
       <div class="md-layout-item md-large-size-100 md-size-100">
@@ -23,8 +22,8 @@
           </md-card-header>
           <md-card-content>
             <config-table
-              v-bind:configs="configs"
               table-header-color="blue"
+              v-on:to-train="getSelected"
             ></config-table>
           </md-card-content>
         </md-card>
@@ -48,33 +47,12 @@ export default {
   },
   data() {
     return {
-      configs: [
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        },
-        {
-          id: 1,
-          name: "ras",
-          dataset: "Hras KRAS"
-        }
-      ]
+      item: {}
     };
   },
   methods: {
-    addConfigForm(newConfig) {
-      this.config = [...this.configs, newTodo];
+    getSelected(item) {
+      this.item = item;
     }
   }
 };

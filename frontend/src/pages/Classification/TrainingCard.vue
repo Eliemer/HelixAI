@@ -14,12 +14,8 @@
       <form>
         <md-field>
           <div class="md-layout-item md-large-size-100 md-size-100">
-            <label for="configfile">Available Configuration Files</label>
-            <md-select v-model="configfile">
-              <md-option value="form" v-for="con in cons" v-bind:key="con">
-                {{ con.name }}
-              </md-option>
-            </md-select>
+            <label for="configfile">Selected Configuration File</label>
+            <md-input v-model="item.config_path"></md-input>
           </div>
         </md-field>
         <div class="md-layout-item md-large-size-100 md-size-100 text-right">
@@ -32,20 +28,10 @@
 <script>
 export default {
   name: "training-card",
-  props: {
-    dataBackgroundColor: {
-      type: String,
-      default: ""
-    }
-  },
-
+  props: ["item", "dataBackgroundColor"],
   data() {
     return {
-      progress: null,
-      cons: [
-        { name: "Ras", value: 1 },
-        { name: "Kinase", value: 2 }
-      ]
+      progress: null
     };
   }
 };

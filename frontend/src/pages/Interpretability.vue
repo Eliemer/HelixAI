@@ -1,32 +1,59 @@
 <template>
   <div class="content">
     <div class="md-layout">
-      <div class="md-layout-item md-large-size-50 md-size-50">
-        <md-card>
-          <md-card-header data-background-color="green">
-            <h4 class="title">Trained Models</h4>
-          </md-card-header>
-          <md-card-content>
-            <model-card
-              v-bind:models="models"
-              table-header-color="green"
-            ></model-card>
-          </md-card-content>
-        </md-card>
+      <div class="md-layout-item md-large-size-50 md-size 50">
+        <div class="md-layout-item md-large-size-100 md-size-100">
+          <md-card>
+            <md-card-header data-background-color="blue">
+              <h4 class="title">Trained Models</h4>
+            </md-card-header>
+            <md-card-content>
+              <model-card
+                v-bind:models="models"
+                table-header-color="blue"
+              ></model-card>
+            </md-card-content>
+          </md-card>
+        </div>
+        <div class="md-layout-item md-large-size-100 md-size-100">
+          <md-card>
+            <md-card-header data-background-color="blue">
+              <h4 class="title">Interpreted Models</h4>
+            </md-card-header>
+            <md-card-content>
+              <interpret-model
+                v-bind:models="models"
+                table-header-color="blue"
+                v-on:to-interpret="getSelected"
+              ></interpret-model>
+            </md-card-content>
+          </md-card>
+        </div>
       </div>
-      <div class="md-layout-item md-large-size-50 md-size-50">
-        <interpret-nav-tab></interpret-nav-tab>
+      <div class="md-layout-item md-large-size-50 md-size 50">
+        <div class="md-layout-item md-large-size-100 md-size 100">
+          <md-card>
+            <md-card-header data-background-color="blue">
+              <h4 class="title">Visualization</h4>
+            </md-card-header>
+            <md-card-content>
+              <d-viewer v-bind:item="item" />
+            </md-card-content>
+          </md-card>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import ModelCard from "./Interpretability/ModelCard.vue";
-import InterpretNavTab from "./Interpretability/InterpretNavTab.vue";
+import InterpretModel from "./Interpretability/InterpretModel.vue";
+import DViewer from "./Interpretability/DViewer.vue";
 export default {
   components: {
     ModelCard,
-    InterpretNavTab
+    InterpretModel,
+    DViewer
   },
   data() {
     return {
@@ -52,8 +79,14 @@ export default {
           accuracy: 0.91,
           loss: 0.0001
         }
-      ]
+      ],
+      item: null
     };
+  },
+  methods: {
+    getSelected(item) {
+      this.item = item;
+    }
   }
 };
 </script>

@@ -9,12 +9,7 @@
       >
         <template slot="content">
           <h4 class="title">Latest Trained Model Metrics</h4>
-          <p class="category">
-            <span class="text-success"
-              ><i class="fas fa-long-arrow-alt-up"></i> 55%
-            </span>
-            increase in today sales.
-          </p>
+          <p class="category"></p>
         </template>
 
         <template slot="footer">
