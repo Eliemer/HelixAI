@@ -7,11 +7,11 @@
     <md-card-content>
       <div class="md-layout">
         <div class="md-layout-item md-large-size-100 md-size-100">
-          <md-progress-bar md-mode="indeterminate"></md-progress-bar>
+          <md-progress-bar md-mode="determinate"></md-progress-bar>
           <h6 class="category" style="text-align:center">Training Progress</h6>
         </div>
       </div>
-      <form>
+      <form @submit.prevent="onTrain">
         <md-field>
           <div class="md-layout-item md-large-size-100 md-size-100">
             <label for="configfile">Selected Configuration File</label>
@@ -19,13 +19,16 @@
           </div>
         </md-field>
         <div class="md-layout-item md-large-size-100 md-size-100 text-right">
-          <md-button class="md-raised md-primary">Train</md-button>
+          <md-button type="submit" class="md-raised md-primary"
+            >Train</md-button
+          >
         </div>
       </form>
     </md-card-content>
   </md-card>
 </template>
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "training-card",
   props: ["item", "dataBackgroundColor"],
@@ -33,6 +36,29 @@ export default {
     return {
       progress: null
     };
+  },
+  methods:{
+    ...mapActions(["trainConfig"]),
+    start() {
+      this.$Progress.start()
+    },
+    set (num) {
+      this.$Progress.set(num)
+    },
+    increase (num) {
+      this.$Progress.increase(num)
+    },
+    decrease (num) {
+      this.$Progress.decrease(num)
+    },
+    finish () {
+      this.$Progress.finish()
+    },
+    onTrain(event){
+      console.log(this.item.config_path);
+
+      this.trainConfig(this.item.config_path);
+    }
   }
 };
 </script>

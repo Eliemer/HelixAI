@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const state = {
-  trainedModels: [],
+  trainModels: [],
   metrics: [],
   attributions: []
 };

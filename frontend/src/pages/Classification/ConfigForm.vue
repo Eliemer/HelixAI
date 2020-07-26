@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="addConfigForm">
+  <form @submit.prevent="createConfig">
     <md-card>
       <md-card-header :data-background-color="dataBackgroundColor">
         <h4 class="title">Model Configuration</h4>
@@ -11,23 +11,26 @@
           <div class="md-layout-item md-large-size-100 md-size-100">
             <md-field>
               <label for="name">Configuration Name</label>
-              <md-input v-model="config_name" type="text"> </md-input>
+              <md-input v-model="config_name" type="text"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-50 md-size-50">
             <md-field>
-              <label for="dataset">Dataset</label>
+              <label>Dataset</label>
               <md-select v-model="dataset">
-                <md-option value="HRAS_KRAS">Hras Kras</md-option>
-                <md-option value="Kinases">Kinases</md-option>
-                <md-option value="TSG_OG">Oncogenes</md-option>
+                <md-option
+                  v-for="data in allDatasets"
+                  v-bind:key="data.id"
+                  :value="data.input_csv"
+                  >{{ data.dataset_name }}</md-option
+                >
               </md-select>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-50 md-size-50">
             <md-field>
               <label>Number of Epochs</label>
-              <md-input v-model="epoch" type="number"></md-input>
+              <md-input v-model="epochs" type="number"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-33 md-size-33">
@@ -36,8 +39,8 @@
               <md-input
                 v-model="learning_rate"
                 type="number"
-                step="0.00000000001"
-                min="0.000000000001"
+                step="0.0000000001"
+                min="0.00"
                 max="1"
               ></md-input>
               <md-tooltip>values of the form 0.0001</md-tooltip>
@@ -60,6 +63,19 @@
               <label>Convolutional Dropout</label>
               <md-input
                 v-model="conv_dropout"
+                type="number"
+                step="0.01"
+                min="0.00"
+                max="1"
+              ></md-input>
+              <md-tooltip>Convolutional Dropout rate</md-tooltip>
+            </md-field>
+          </div>
+          <div class="md-layout-item md-large-size-33 md-size-33">
+            <md-field>
+              <label>Fuzzy Radius</label>
+              <md-input
+                v-model="fuzzy_radius"
                 type="number"
                 step="0.01"
                 min="0.00"
@@ -144,11 +160,15 @@
               <md-input v-model="lin_size" type="number"></md-input>
             </md-field>
           </div>
+          <div class="md-layout-item md-small-size-100 md-size-33">
+            <md-field>
+              <label>Kernel Limit</label>
+              <md-input v-model="kernel_limit" type="number"></md-input>
+            </md-field>
+          </div>
           <div class="md-layout-item md-size-100 text-right">
             <md-card-actions>
-              <md-button type="submit" class="md-raised md-primary">
-                Create Config File</md-button
-              >
+              <md-button type="submit" class="md-raised md-primary">Create Config File</md-button>
             </md-card-actions>
           </div>
         </div>
@@ -157,7 +177,7 @@
   </form>
 </template>
 <script>
-import { mapGetters, mapActions } from "axios";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "config-form",
   props: {
@@ -170,7 +190,7 @@ export default {
     return {
       config_name: null,
       dataset: null,
-      epoch: null,
+      epochs: null,
       batch: null,
       workers: null,
       learning_rate: null,
@@ -180,7 +200,7 @@ export default {
       nb_classes: null,
       nb_features: null,
       nb_nodes: null,
-
+      input_csv: null,
       nb_conv_layers: null,
       nb_kernels: null,
       nb_filters: null,
@@ -194,9 +214,72 @@ export default {
     };
   },
   methods: {
-    addConfigForm() {
-      return null;
+    ...mapActions(["addConfig", "fetchConfigs"]),
+    createConfig() {
+      this.input_csv = this.dataset;
+      let config = {
+        config_name: this.config_name,
+        dataset: this.dataset,
+        epochs: parseInt(this.epochs),
+        batch: parseInt(this.batch),
+        workers: parseInt(this.workers),
+        learning_rate: parseFloat(this.learning_rate),
+        fuzzy_radius: parseFloat(this.learning_rate),
+        augment: parseInt(this.augment),
+
+        nb_classes: parseInt(this.nb_classes),
+        nb_features: parseInt(this.nb_features),
+        nb_nodes: parseInt(this.nb_nodes),
+        input_csv: this.input_csv,
+        nb_conv_layers: parseInt(this.nb_conv_layers),
+        nb_kernels: parseInt(this.nb_kernels),
+        nb_filters: parseInt(this.nb_filters),
+        conv_dropout: parseFloat(this.conv_dropout),
+        pool_size: parseInt(this.pool_size),
+        kernel_limit: parseInt(this.kernel_limit),
+
+        nb_linear_layers: parseInt(this.nb_linear_layers),
+        lin_size: parseInt(this.lin_size),
+        lin_dropout: parseFloat(this.lin_dropout),
+        shuffle: true,
+        is_weighted: true,
+        split: [0.7, 0.1, 0.2],
+        error_csv: "dummy_error.csv",
+        tensors: "",
+        pdb: "",
+        output_name: ""
+      };
+      console.log(config);
+      this.addConfig(config);
+
+      this.config_name = null;
+      this.dataset = null;
+      this.epochs = null;
+      this.batch = null;
+      this.workers = null;
+      this.learning_rate = null;
+      this.augment = null;
+      this.input_csv = null;
+      this.nb_classes = null;
+      this.nb_features = null;
+      this.nb_nodes = null;
+      this.nb_conv_layers = null;
+      this.nb_kernels = null;
+      this.nb_filters = null;
+      this.conv_dropout = null;
+      this.pool_size = null;
+      this.kernel_limit = null;
+      this.fuzzy_radius = null;
+      this.nb_linear_layers = null;
+      this.lin_size = null;
+      this.lin_dropouy = null;
+
+      this.$forceUpdate();
     }
+  },
+  computed: mapGetters(["allDatasets", "allConfigs"]),
+  mounted(){
+    this.fetchConfigs();
   }
 };
 </script>
