@@ -7,6 +7,7 @@ import functools
 import os
 
 import torch
+from pytorch_lightning_src.Model.interpret_v2 import Interpreter
 from pytorch_lightning_src.Model.GCNN import GCNN
 from pytorch_lightning_src.Logger.logger import JSONLogger
 import pytorch_lightning as pl
@@ -20,9 +21,9 @@ def train(config):
 	if os.path.exists(config['input_csv']):
 
 		i = 0
-		save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"_{i}_.pt")
+		save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"__version_{i}_.pt")
 		while(os.path.exists(save_path)):
-			save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"_{i+1}_.pt")
+			save_path = os.path.join(current_app.config['MODEL_PATH'], config['dataset'] + f"__version_{i+1}_.pt")
 			i+=1
 
 		model = GCNN(config)
@@ -55,6 +56,40 @@ def train(config):
 	else:
 		return {"Error": "Input CSV not found"}
 
+
+def interpret(config, model_path):
+	if os.path.exists(config['input_csv']):
+
+		save_path = model_path.split('.')[0] + '.npz'
+		save_path = os.path.join(current_app.config['ATTR_PATH'], save_path)
+
+		model = GCNN(config)
+		model.prepare_data()
+		model.setup(0)
+		model_path = os.path.join(current_app.config['MODEL_PATH'], model_path)
+		model.load_state_dict(torch.load(model_path))
+
+		for params in model.parameters():
+			params = torch.autograd.Variable(params, requires_grad=True)
+
+		interpreter = Interpreter(
+			model = model,
+			loss_fn = torch.nn.CrossEntropyLoss(),
+			protein_type = config['dataset']
+		)
+
+		losses, attributions = interpreter.interpret_test(
+			dataset = model.train_dataloader()
+		)
+
+		pdbs, output_path = interpreter.generate_attributions(
+			losses, 
+			attributions, 
+			output_path=save_path
+		)
+
+		return jsonify({"pdb": pdbs, "path": output_path}), 200
+
 def insert_model_to_db(name, metrics, model_class):
 	db = get_db()
 
@@ -75,9 +110,10 @@ def insert_model_to_db(name, metrics, model_class):
 
 	else:
 		db.execute(
-			"INSERT INTO Model(model_python_class, model_path, model_accuracy, model_loss) VALUES (?,?,?,?)",
+			"INSERT INTO Model(model_python_class, model_path, model_metrics, model_accuracy, model_loss) VALUES (?,?,?,?,?)",
 			[model_class, 
 			name,
+			name.split('.')[0] + '.json',
 			test_acc,
 			test_loss])
 
@@ -88,7 +124,22 @@ def insert_model_to_db(name, metrics, model_class):
 
 	return dict(res)
 
+@bp.route('/interpret/config/path/<config_path>/model/<model_path>', methods=('GET', 'POST'))
+@fresh_jwt_required
+def interpret_with_file(config_path, model_path):
+	if request.method == 'POST':
+		with open(os.path.join(current_app.config['CONFIG_PATH'], config_path), 'r') as fp:
+			config = json.load(fp)
 
+			# print(config)
+
+			config = {**config}
+			config['input_csv']   = os.path.join(current_app.config['CSV_PATH'], config['input_csv'])
+			config['error_csv']   = os.path.join(current_app.config['CSV_PATH'], config['error_csv'])
+			config['tensors']     = current_app.config['TENSOR_PATH']
+			config['pdb']         = current_app.config['PDB_PATH']
+
+			return interpret(config, model_path)
 
 @bp.route('/train/raw', methods=('GET', 'POST'))
 @fresh_jwt_required
@@ -204,4 +255,26 @@ def get_models_from_user():
 	return jsonify(models)
 
 
-# @bp.route('')
+@bp.route('/get_train_results', methods=['GET'])
+def get_all_train_results():
+	results = []
+
+	db = get_db()
+
+	db_res = db.execute(
+		("SELECT config_id, model_id, model_metrics "
+		"FROM Trains "
+		"INNER JOIN Model "
+		"Using(model_id) ")).fetchall()
+
+	for res in db_res:
+		res = dict(res)
+
+		res['metrics'] = json.load(open(
+			os.path.join(
+				current_app.config['LOG_PATH'],
+				res['model_metrics'])))[-1] 
+				# the last metrics are the test epoch
+		results.append(res)
+
+	return jsonify(results), 200

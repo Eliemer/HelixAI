@@ -11,11 +11,13 @@ pp = pprint.PrettyPrinter(indent=2)
 
 try:
 	from Model.GCNN_Layers import *
+	from Model.interpret_v2 import *
 	from Datasets.tools import get_subsets, fetch_pdb, tensorize_pdb
 	from Datasets.dataset import DatasetProtein
 
 except ModuleNotFoundError:
 	from pytorch_lightning_src.Model.GCNN_Layers import *
+	from pytorch_lightning_src.Model.interpret_v2 import *
 	from pytorch_lightning_src.Datasets.tools import get_subsets, fetch_pdb, tensorize_pdb
 	from pytorch_lightning_src.Datasets.dataset import DatasetProtein
 
@@ -184,6 +186,7 @@ class GCNN(pl.LightningModule):
 		)
 
 		return data_ld
+
 
 	def forward(self, v, c, mask=None):
 

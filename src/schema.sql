@@ -53,6 +53,7 @@ CREATE TABLE Model(
   model_id INTEGER PRIMARY KEY,
   model_python_class TEXT,
   model_path TEXT NOT NULL,
+  model_metrics TEXT NOT NULL,
   model_accuracy REAL,
   model_loss REAL);
 
