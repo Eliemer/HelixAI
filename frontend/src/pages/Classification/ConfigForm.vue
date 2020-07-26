@@ -11,7 +11,7 @@
           <div class="md-layout-item md-large-size-100 md-size-100">
             <md-field>
               <label for="name">Configuration Name</label>
-              <md-input v-model="config_name" type="text"></md-input>
+              <md-input v-model="name" type="text"></md-input>
             </md-field>
           </div>
           <div class="md-layout-item md-large-size-50 md-size-50">
@@ -188,7 +188,7 @@ export default {
   },
   data() {
     return {
-      config_name: null,
+    name: null,
       dataset: null,
       epochs: null,
       batch: null,
@@ -218,7 +218,7 @@ export default {
     createConfig() {
       this.input_csv = this.dataset;
       let config = {
-        config_name: this.config_name,
+        name: this.name,
         dataset: this.dataset,
         epochs: parseInt(this.epochs),
         batch: parseInt(this.batch),
@@ -252,7 +252,7 @@ export default {
       console.log(config);
       this.addConfig(config);
 
-      this.config_name = null;
+      this.name = null;
       this.dataset = null;
       this.epochs = null;
       this.batch = null;

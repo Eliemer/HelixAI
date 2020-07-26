@@ -7,8 +7,8 @@
     <md-card-content>
       <div class="md-layout">
         <div class="md-layout-item md-large-size-100 md-size-100">
-          <md-progress-bar md-mode="determinate"></md-progress-bar>
-          <h6 class="category" style="text-align:center">Training Progress</h6>
+          <md-progress-bar md-mode="query"></md-progress-bar>
+          <h6 class="category" style="text-align:center">{{ completed }}</h6>
         </div>
       </div>
       <form @submit.prevent="onTrain">
@@ -24,6 +24,11 @@
           >
         </div>
       </form>
+
+      <div class="md-layout-item md-large-size-100 md-size-100 text-right">
+        <h6>{{ completed }}</h6>
+        <p>{{ details }}</p>
+      </div>
     </md-card-content>
   </md-card>
 </template>
@@ -34,32 +39,27 @@ export default {
   props: ["item", "dataBackgroundColor"],
   data() {
     return {
-      progress: null
+      progress: null,
+      details: {},
+      completed: ""
     };
   },
   methods:{
     ...mapActions(["trainConfig"]),
-    start() {
-      this.$Progress.start()
-    },
-    set (num) {
-      this.$Progress.set(num)
-    },
-    increase (num) {
-      this.$Progress.increase(num)
-    },
-    decrease (num) {
-      this.$Progress.decrease(num)
-    },
-    finish () {
-      this.$Progress.finish()
-    },
-    onTrain(event){
-      console.log(this.item.config_path);
 
-      this.trainConfig(this.item.config_path);
+    onTrain(event){
+      this.details = {};
+      console.log(this.item.config_path);
+      this.completed = "In Progress...";
+      let promise = this.trainConfig(this.item.config_path, this.completed);
+      this.$forceUpdate();
+      promise.then(value => {
+        this.details = value.model_details;
+        this.completed = value.completed;
+      });
     }
-  }
+  },
+  computed: mapGetters([" allTrainedModels", "allConfigs", "allMetrics"])
 };
 </script>
 <style scoped>

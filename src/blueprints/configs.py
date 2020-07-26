@@ -23,7 +23,7 @@ def allowed_file(filename):
 
 
 @bp.route('/', methods=('POST',))
-@fresh_jwt_required
+#@fresh_jwt_required
 def create_new_config():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -106,7 +106,7 @@ def display_all_config_files():
         return jsonify(configs)
 
 @bp.route('/user', methods=('GET',))
-@jwt_required
+#@jwt_required
 def display_user_config_files():
     if request.method == 'GET':
 
