@@ -22,33 +22,9 @@ const actions = {
     // console.log(response.data)
   },
   //need also id of logged user
-  async addConfig(
-    { commit },
-    config_name,
-    dataset,
-    epoch,
-    batch,
-    workers,
-    learning_rate,
-    fuzzy_radius,
-    augment,
-    nb_classes,
-    nb_features,
-    nb_nodes,
-    nb_conv_layers,
-    nb_kernels,
-    nb_filters,
-    conv_dropout,
-    pool_size,
-    kernel_limit,
-    nb_linear_layers,
-    lin_size,
-    lin_dropout
-  ) {
-    const response = await axios.post(
-      "https://jsonplaceholder.typicode.com/todos",
-      {}
-    );
+  async addConfig({ commit }, config) {
+    console.log(config)
+    const response = await axios.post("http://127.0.0.1:5000/configs/", config);
     commit("newConfig", response.data);
   }
 };

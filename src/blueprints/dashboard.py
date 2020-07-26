@@ -23,7 +23,7 @@ def allowed_file(filename):
 	return False
 
 @bp.route('/', methods=['GET', 'POST'])
-@fresh_jwt_required
+#@fresh_jwt_required
 def upload_file():
 	if request.method == 'POST':
 		if 'file' not in request.files:

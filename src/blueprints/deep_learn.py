@@ -142,7 +142,7 @@ def interpret_with_file(config_path, model_path):
 			return interpret(config, model_path)
 
 @bp.route('/train/raw', methods=('GET', 'POST'))
-@fresh_jwt_required
+#@fresh_jwt_required
 def train_with_raw():
 	if request.method == 'POST':
 		request.get_data()
@@ -159,7 +159,7 @@ def train_with_raw():
 		return train(config)
 
 @bp.route('/train/config/path/<config_path>', methods=("GET", "POST"))
-@fresh_jwt_required
+#@fresh_jwt_required
 def train_with_file(config_path):
 	with open(os.path.join(current_app.config['CONFIG_PATH'], config_path), 'r') as fp:
 		config = json.load(fp)
