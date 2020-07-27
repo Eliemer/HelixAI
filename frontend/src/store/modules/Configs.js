@@ -32,7 +32,7 @@ const actions = {
 const mutations = {
   setConfigs: (state, config_files) => (state.config_files = config_files),
   setUserConfigs: (state, user_configs) => (state.user_configs = user_configs),
-  newConfig: (state, user_configs) => state.user_configs.unshift(user_configs)
+  newConfig: (state, config) => state.config_files.unshift(config)
 };
 
 export default {

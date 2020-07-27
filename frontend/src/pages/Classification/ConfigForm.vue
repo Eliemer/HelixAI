@@ -7,7 +7,7 @@
       </md-card-header>
 
       <md-card-content>
-        <div class="md-layout">
+        <div class="md-layout" :v-bind:key="key">
           <div class="md-layout-item md-large-size-100 md-size-100">
             <md-field>
               <label for="name">Configuration Name</label>
@@ -188,7 +188,7 @@ export default {
   },
   data() {
     return {
-    name: null,
+      name: null,
       dataset: null,
       epochs: null,
       batch: null,
@@ -210,11 +210,12 @@ export default {
 
       nb_linear_layers: null,
       lin_size: null,
-      lin_dropout: null
+      lin_dropout: null,
+      key: 1
     };
   },
   methods: {
-    ...mapActions(["addConfig", "fetchConfigs"]),
+    ...mapActions(["addConfig","fetchConfigs"]),
     createConfig() {
       this.input_csv = this.dataset;
       let config = {
@@ -274,12 +275,9 @@ export default {
       this.lin_size = null;
       this.lin_dropouy = null;
 
-      this.$forceUpdate();
-    }
+    },
+    
   },
-  computed: mapGetters(["allDatasets", "allConfigs"]),
-  mounted(){
-    this.fetchConfigs();
-  }
+  computed: mapGetters(["allDatasets", "allConfigs"])
 };
 </script>

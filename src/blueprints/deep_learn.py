@@ -5,7 +5,6 @@ from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identit
 from src.db import get_db
 import functools
 import os
-
 import torch
 from pytorch_lightning_src.Model.pymol_attributions import StructureAttribution
 from pytorch_lightning_src.Model.interpret_v2 import Interpreter
@@ -13,6 +12,7 @@ from pytorch_lightning_src.Model.GCNN import GCNN
 from pytorch_lightning_src.Logger.logger import JSONLogger
 import pytorch_lightning as pl
 import json
+from pymol import cmd
 
 bp = Blueprint('deep_learn', __name__, url_prefix='/deep_learn')
 
@@ -288,6 +288,8 @@ def pymol_scene():
 		attr_path = request.form['path']
 		pdb_id = request.form['pdb_id']
 		print(os.path.join(current_app.config['ATTR_PATH'], attr_path))
+		cmd.reinitialize()
+		cmd.bg_color('black')
 		pymol_attr = StructureAttribution(
 			attribution_path=os.path.join(current_app.config['ATTR_PATH'], attr_path),
 			data_path=current_app.config['PDB_PATH'],
@@ -300,5 +302,5 @@ def pymol_scene():
 
 		return send_from_directory(
 			current_app.config['PYMOL_PATH'], 
-			pymol_path), 200
+			pymol_path, as_attachment= True), 200
 

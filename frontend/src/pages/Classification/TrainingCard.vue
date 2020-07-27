@@ -7,7 +7,7 @@
     <md-card-content>
       <div class="md-layout">
         <div class="md-layout-item md-large-size-100 md-size-100">
-          <md-progress-bar md-mode="query"></md-progress-bar>
+          <md-progress-bar :md-mode="prog"></md-progress-bar>
           <h6 class="category" style="text-align:center">{{ completed }}</h6>
         </div>
       </div>
@@ -41,7 +41,8 @@ export default {
     return {
       progress: null,
       details: {},
-      completed: ""
+      completed: "",
+      prog: "determinate"
     };
   },
   methods:{
@@ -49,18 +50,20 @@ export default {
 
     onTrain(event){
       this.details = {};
-      console.log(this.item.config_path);
       this.completed = "In Progress...";
-      let promise = this.trainConfig(this.item.config_path, this.completed);
+      this.prog = "indeterminate";
+      let promise = this.trainConfig(this.item.config_path);
 
       promise.then(value => {
         this.details = value.model_details;
         this.completed = value.completed;
+        this.prog = value.prog;
+
+        this.$forceUpdate();
       });
-      this.$forceUpdate();
     }
   },
-  computed: mapGetters([" allTrainedModels", "allConfigs", "allMetrics"])
+  computed: mapGetters([" allTrainedModels", "allMetrics"])
 };
 </script>
 <style scoped>

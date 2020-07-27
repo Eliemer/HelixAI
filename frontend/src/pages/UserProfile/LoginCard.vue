@@ -18,7 +18,9 @@
             <md-input v-model="password" type="password"></md-input>
           </md-field>
         </div>
-        <md-button class="md-round md-primary">Login</md-button>
+        <md-button class="md-round md-primary" @click.native="onLogin"
+          >>Login</md-button
+        >
         <md-button class="md-round md-primary">Register</md-button>
       </md-card-content>
     </md-card>
@@ -39,6 +41,11 @@ export default {
       username: null,
       password: null
     };
+  },
+  methods: {
+    onLogin(event) {
+      this.$router.push("/dashboard");
+    }
   }
 };
 </script>

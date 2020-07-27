@@ -21,16 +21,17 @@ const actions = {
     commit("setModels", response.data);
   },
 
-  async trainConfig({ commit }, config_path, completed) {
+  async trainConfig({ commit }, config_path) {
     let path =
       "http://127.0.0.1:5000/deep_learn/train/config/path/" + config_path;
     const response = await axios.post(path);
     console.log(response.data.metrics); //need to understand how the data is created
-    completed = "Finished";
+
     let rte = {
       model_path: response.data.model_path,
       model_details: response.data.model_details,
-      completed: completed
+      completed: "Training Success",
+      prog: "determinate"
     };
     let model = {
       config_path: config_path,
@@ -40,7 +41,7 @@ const actions = {
       model_path: response.data.model_details.model_path,
       model_python_class: response.data.model_details.model_python_class
     };
-
+    console.log(response.data);
     commit("newTrainedModel", response.data);
     commit("newMetrics", rte);
     commit("newModel", model);
@@ -62,8 +63,18 @@ const actions = {
   },
   async downloadAttributions({ commit }, form) {
     let url = "http://127.0.0.1:5000/deep_learn/get_pymol_scene";
-    const response = await axios.post(url, form);
-    FileDownload(response.data, `${form.get("pdb_id")}.pse`);
+    const response = await axios({
+      method: "post",
+      url: url,
+      data: form,
+      responseType: "blob"
+    });
+    const ul = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement("a");
+    link.href = ul;
+    link.setAttribute("download", `${form.get("pdb_id")}.pse`); //or any other extension
+    document.body.appendChild(link);
+    link.click();
   }
 };
 //changes the state
