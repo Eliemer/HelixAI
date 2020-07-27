@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <md-content>
       <md-table
         v-model="allConfigs"

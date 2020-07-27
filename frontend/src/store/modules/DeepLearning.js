@@ -1,23 +1,28 @@
 import axios from "axios";
+import { Store } from "vuex";
 
 const state = {
   trainedModels: [],
   metrics: [],
-  attributions: []
+  attributions: [],
+  models: []
 };
 const getters = {
-  allInterpretedModels: state => state.interpreted,
   allTrainedModels: state => state.trainedModels,
-  allMetrics: state => state.metrics
+  allModels: state => state.models,
+  allMetrics: state => state.metrics,
+  allAttributions: state => state.attributions
 };
 //need to add delete option
 const actions = {
-  async fetchTrainedModels({ commit }) {
-    const response = await axios.get("htto://127.0.0.1:5000/");
-    commit("setTrainedModels", response.data);
+  async fetchModels({ commit }) {
+    const response = await axios.get(
+      "http://127.0.0.1:5000/deep_learn/get_models"
+    );
+    commit("setModels", response.data);
   },
 
-  async trainConfig({ commit }, config_path,completed) {
+  async trainConfig({ commit }, config_path, completed) {
     let path =
       "http://127.0.0.1:5000/deep_learn/train/config/path/" + config_path;
     const response = await axios.post(path);
@@ -28,25 +33,43 @@ const actions = {
       model_details: response.data.model_details,
       completed: completed
     };
+    let model = {
+      config_path: config_path,
+      model_accuracy: response.data.model_details.model_accuracy,
+      model_id: response.data.model_details.model_id,
+      model_loss: response.data.model_details.model_loss,
+      model_path: response.data.model_details.model_path,
+      model_python_class: response.data.model_details.model_python_class
+    };
+
     commit("newTrainedModel", response.data);
     commit("newMetrics", rte);
+    commit("newModel", model);
     return rte;
   },
-  async interpretModel({ commit }, { config_path, model_path }) {
-    const response = await axios.post(
-      "http://127.0.0.1:5000/deep_learn/interpret",
-      { config_path, model_path }
-    );
-    commit("newTrainedModel", response.data);
-    console.log(response.data.metrics);
-    return response.data.metrics;
+  async interpretModel({ commit }, path) {
+    let url = `http://127.0.0.1:5000/deep_learn/interpret/config/path/${path.config_path}/model/${path.model_path}`;
+
+    const response = await axios.post(url, path.config_path, path.model_path);
+    console.log(response.data);
+    let rtr = {
+      completed: "Model has been interpreted",
+      prog: "determinate"
+    };
+    
+      commit("newAttributions",response.data)
+    
+    return rtr;
   }
 };
 //changes the state
 const mutations = {
   setTrainedModels: (state, models) => (state.trainedModels = models),
-  newTrainedModel: (state, model) => state.trainedModels.unshift(model),
+  setModels: (state, models) => (state.models = models),
   setAttributions: (state, attributions) => (state.attributions = attributions),
+  newModel: (state, model) => state.models.unshift(model),
+  newTrainedModel: (state, model) => state.trainedModels.unshift(model),
+  newAttributions:(state,attribution) => state.attributions.unshift(attribution),
   newMetrics: (state, metric) => state.metrics.unshift(metric)
 };
 

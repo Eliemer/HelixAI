@@ -52,11 +52,12 @@ export default {
       console.log(this.item.config_path);
       this.completed = "In Progress...";
       let promise = this.trainConfig(this.item.config_path, this.completed);
-      this.$forceUpdate();
+
       promise.then(value => {
         this.details = value.model_details;
         this.completed = value.completed;
       });
+      this.$forceUpdate();
     }
   },
   computed: mapGetters([" allTrainedModels", "allConfigs", "allMetrics"])

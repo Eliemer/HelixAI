@@ -24,7 +24,7 @@
       <div class="md-layout-item md-large-size-100 md-size-100">
         <div>
           <md-table
-            v-model="item.pdbs_attributed"
+            v-model="item.pdb"
             table-header-color="tableHeaderColor"
             @md-selected="onSelect"
           >
@@ -41,6 +41,9 @@
               }}</md-table-cell>
               <md-table-cell md-label="PDB Class">{{
                 item.pdb_class
+              }}</md-table-cell>
+              <md-table-cell md-label="PDB Class">{{
+                item.pdb_loss
               }}</md-table-cell>
               <md-table-cell md-label="Download Structure">
                 <md-button class="md-just-icon md-simple md-primary">

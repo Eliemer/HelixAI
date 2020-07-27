@@ -125,7 +125,7 @@ def insert_model_to_db(name, metrics, model_class):
 	return dict(res)
 
 @bp.route('/interpret/config/path/<config_path>/model/<model_path>', methods=('GET', 'POST'))
-@fresh_jwt_required
+#@fresh_jwt_required
 def interpret_with_file(config_path, model_path):
 	if request.method == 'POST':
 		with open(os.path.join(current_app.config['CONFIG_PATH'], config_path), 'r') as fp:
@@ -234,19 +234,20 @@ def insert_to_db_is_trained(config_path, model_path):
 		return {"Error": "model or config file does not exists in DB"}
 
 @bp.route('/get_models', methods=['GET'])
-@jwt_required
+#@jwt_required
 def get_models_from_user():
 	models = []
 
-	user_id = get_jwt_identity()
+	#user_id = get_jwt_identity()
 
 	db = get_db()
 	db_res = db.execute(
-		("SELECT Model.* "
-		"FROM Trains "
+		("SELECT config_path,Model.* "
+		"FROM ConfigFile "
+		"INNER JOIN Trains ON ConfigFile.config_id=Trains.config_id "
 		"INNER JOIN Model ON Model.model_id=Trains.model_id "
-		"WHERE Trains.user_id=?"),
-		(user_id,)
+		),
+		
 	).fetchall()
 
 	for res in db_res:

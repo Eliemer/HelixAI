@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="content">
     <md-table
-      v-model="attributions"
+      v-model="allAttributions"
       :table-header-color="tableHeaderColor"
       @md-selected="onSelect"
     >
@@ -10,21 +10,18 @@
         slot-scope="{ item }"
         md-selectable="single"
       >
-        <md-table-cell md-label="Attributed Model">{{
-          item.attribution_name
-        }}</md-table-cell>
         <md-table-cell md-label="Path to Attributions">
-          {{ item.attribution_path }}
+          {{ item.path.split("/")[item.path.split("/").length - 1] }}
         </md-table-cell>
         <md-table-cell md-label="PDBS Attributed">
-          {{ item.pdbs_attributed.length }}
+          {{ item.pdb.length }}
         </md-table-cell>
-        <md-table-cell md-label="Loss">{{ item.loss }}</md-table-cell>
       </md-table-row>
     </md-table>
   </div>
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "interpret-model",
   props: ["tableHeaderColor"],
@@ -56,6 +53,14 @@ export default {
       e.preventDefault();
       this.selected = null;
     }
-  }
+  },
+  computed: mapGetters(["allAttributions"])
 };
 </script>
+<style scoped>
+.md-content {
+  max-width: 100%;
+  max-height: 200px;
+  overflow: auto;
+}
+</style>

@@ -59,9 +59,8 @@ export default {
   computed: mapGetters(["allTrainedModels"]),
   created() {
     this.label_size = (this.allTrainedModels[0].metrics.length - 1) / 3;
-    this.latestModelmetrics.data.labels = Array.from(
-      Array(this.lable_size),
-      (_, i) => i + 1
+    this.latestModelmetrics.data.labels.push(
+      Array.from(Array(this.lable_size), (_, i) => i + 1)
     );
     let train = [];
     let test = [];
