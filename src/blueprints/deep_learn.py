@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, session, request
-from flask import jsonify, current_app
+from flask import jsonify, current_app, send_from_directory
 from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
 
 from src.db import get_db
@@ -7,6 +7,7 @@ import functools
 import os
 
 import torch
+from pytorch_lightning_src.Model.pymol_attributions import StructureAttribution
 from pytorch_lightning_src.Model.interpret_v2 import Interpreter
 from pytorch_lightning_src.Model.GCNN import GCNN
 from pytorch_lightning_src.Logger.logger import JSONLogger
@@ -89,6 +90,7 @@ def interpret(config, model_path):
 		)
 
 		return jsonify({"pdb": pdbs, "path": output_path}), 200
+
 
 def insert_model_to_db(name, metrics, model_class):
 	db = get_db()
@@ -279,3 +281,24 @@ def get_all_train_results():
 		results.append(res)
 
 	return jsonify(results), 200
+
+@bp.route('/get_pymol_scene', methods=['POST', 'GET'])
+def pymol_scene():
+	if request.method == 'POST':
+		attr_path = request.form['attr_path']
+		pdb_id = request.form['pdb_id']
+
+		pymol_attr = StructureAttribution(
+			attribution_path=os.path.join(current_app.config['ATTR_PATH'], attr_path),
+			data_path=current_app.config['PDB_PATH'],
+			output_path=current_app.config['PYMOL_PATH']
+		)
+
+		pymol_path = pymol_attr.structure_attribution(pdb_id).split('/')[-1]
+
+		print(current_app.config['PYMOL_PATH'], pymol_path)
+
+		return send_from_directory(
+			current_app.config['PYMOL_PATH'], 
+			pymol_path), 200
+

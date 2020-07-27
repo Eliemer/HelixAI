@@ -21,7 +21,8 @@ def create_app(test_config=None):
         CSV_PATH=os.path.join(app.instance_path, 'CSV/'),
         LOG_PATH=os.path.join(app.instance_path, 'LOG/'),
         MODEL_PATH=os.path.join(app.instance_path, 'MODEL/'),
-        ATTR_PATH=os.path.join(app.instance_path, 'ATTRIBUTIONS/')
+        ATTR_PATH=os.path.join(app.instance_path, 'ATTRIBUTIONS/'),
+        PYMOL_PATH=os.path.join(app.instance_path, 'PYMOL/')
     )
 
     if test_config is None:
@@ -72,6 +73,10 @@ def create_app(test_config=None):
     except OSError:
         print("Warning: ", sys.exc_info()[0])
 
+    try:
+        os.makedirs(app.config['PYMOL_PATH'])
+    except OSError:
+        print("Warning: ", sys.exc_info()[0])
 
     from . import db
     db.init_app(app)
