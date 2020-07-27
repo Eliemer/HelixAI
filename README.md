@@ -12,7 +12,11 @@ Helix AI is a web application that encapsulates this process and provides the us
 
 ### Getting Started
 If you're interested in using the model by itself, click [here](https://github.com/Eliemer/GCNN_Lightning). You can also learn more about pytorch and pytorch_lightning [here](https://pytorch.org/) and [here](https://github.com/PytorchLightning/pytorch-lightning), respectively. The python requirements are all included in the `setup.py` script at the root of the project. Simply `cd` into the project root and run `pip install .`. The frontend (Javascript) requirements are included in a `package.json` file. Before installing dependencies, you must install `npm` and `vue-cli` as directed in the Vue.js official webpage [here](https://vuejs.org/). Then simply `cd` into `root/frontend` and run `npm install`.
+
+To be able to use PyMol features, you must download pymol [here](https://pymolwiki.org/index.php/Category:Installation).
+
 Once all requirements are met, you must export a few environment variables for flask:
+
 In linux:
 ```Bash
 export FLASK_APP='src'
@@ -29,6 +33,8 @@ This turns the Flask server on to receive requests through the REST endpoints. I
 ```Bash
 npm run serve
 ```
+The web application should now be available on `localhost:8080`, ready for use.
+
 ### Media
 ##### Demo
 [Demo]()
