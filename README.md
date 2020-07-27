@@ -25,7 +25,7 @@ flask run
 ```
 In Windows powershell:
 ```
-$env:FLASK_APP = \"src\"
+$env:FLASK_APP = "src"
 flask init_db
 flask run
 ```
