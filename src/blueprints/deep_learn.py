@@ -285,9 +285,9 @@ def get_all_train_results():
 @bp.route('/get_pymol_scene', methods=['POST', 'GET'])
 def pymol_scene():
 	if request.method == 'POST':
-		attr_path = request.form['attr_path']
+		attr_path = request.form['path']
 		pdb_id = request.form['pdb_id']
-
+		print(os.path.join(current_app.config['ATTR_PATH'], attr_path))
 		pymol_attr = StructureAttribution(
 			attribution_path=os.path.join(current_app.config['ATTR_PATH'], attr_path),
 			data_path=current_app.config['PDB_PATH'],

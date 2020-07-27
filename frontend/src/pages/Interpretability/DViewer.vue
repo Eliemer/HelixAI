@@ -46,7 +46,7 @@
                 item.pdb_loss
               }}</md-table-cell>
               <md-table-cell md-label="Download Structure">
-                <md-button class="md-just-icon md-simple md-primary">
+                <md-button class="md-just-icon md-simple md-primary" @click="onClick">
                   <md-icon>3d_rotation</md-icon>
                   <md-tooltip md-direction="top"
                     >Download Attributed Structure</md-tooltip
@@ -62,7 +62,7 @@
 </template>
 <script>
 import Vue from "vue";
-
+import {mapGetters, mapActions} from "vuex";
 export default {
   name: "d-viewer",
   props: ["item"],
@@ -74,8 +74,16 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["downloadAttributions"]),
     onSelect(item, event) {
       this.selected = item;
+    },
+    onClick(){
+      let pdb_id = `${this.selected.pdb_name.toLowerCase()}_${this.selected.pdb_chain.toLowerCase()}`;
+      let form = new FormData();
+      form.append("path", this.item.path);
+      form.append("pdb_id", pdb_id);
+      this.downloadAttributions(form);
     }
   }
 };

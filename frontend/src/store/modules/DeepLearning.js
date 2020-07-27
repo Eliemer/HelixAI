@@ -1,6 +1,5 @@
 import axios from "axios";
-import { Store } from "vuex";
-
+const FileDownload = require("js-file-download");
 const state = {
   trainedModels: [],
   metrics: [],
@@ -56,10 +55,15 @@ const actions = {
       completed: "Model has been interpreted",
       prog: "determinate"
     };
-    
-      commit("newAttributions",response.data)
-    
+
+    commit("newAttributions", response.data);
+
     return rtr;
+  },
+  async downloadAttributions({ commit }, form) {
+    let url = "http://127.0.0.1:5000/deep_learn/get_pymol_scene";
+    const response = await axios.post(url, form);
+    FileDownload(response.data, `${form.get("pdb_id")}.pse`);
   }
 };
 //changes the state
